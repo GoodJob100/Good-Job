@@ -264,30 +264,39 @@
     const db = getFirestore(app);
 
     onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
+  if (!user) return window.location.href = "login.html";
 
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (userDoc.exists()) {
-        const data = userDoc.data();
-        document.getElementById("userName").innerText = data.username || "No username";
-        document.getElementById("userNameDisplay").innerText = data.username || "No username";
-        document.getElementById("userPhone").innerText = data.phone || "N/A";
-        document.getElementById("userEmail").innerText = data.email || "N/A";
-        document.getElementById("mainBalance").innerText = `৳${data.balance || 0}`;
-        document.getElementById("accountStatus").innerHTML = data.isPro
-  ? `<div class="inline-flex items-center gap-1 bg-yellow-400 bg-opacity-40 text-yellow-400 text-xs font-medium px-3 py-0.5 rounded-full border border-yellow-400">
-      <i class="fas fa-star text-sm"></i> Pro Member
-    </div>`
-  : `<div class="inline-flex items-center gap-1 bg-purple-600 bg-opacity-40 text-purple-300 text-xs font-medium px-3 py-0.5 rounded-full border border-purple-500">
-      <i class="fas fa-bolt text-sm"></i> Regular Member
-    </div>`;
+  const userDoc = await getDoc(doc(db, "users", user.uid));
+  if (userDoc.exists()) {
+    const data = userDoc.data();
 
-        if (data.isPro === true) {
-          renderDailyBonusButton("dailyBonusContainer");
-        }
-        document.getElementById("loadingOverlay").style.display = "none";
-      }
-    });
+    document.getElementById("userName").innerText = data.username || "No username";
+    document.getElementById("userNameDisplay").innerText = data.username || "No username";
+    document.getElementById("userPhone").innerText = data.phone || "N/A";
+    document.getElementById("userEmail").innerText = data.email || "N/A";
+    document.getElementById("mainBalance").innerText = `৳${data.balance || 0}`;
+
+    // ✅ Pro Earnings show here
+    document.getElementById("totalproEarnings").innerHTML = `
+      <i class="fa-solid fa-bangladeshi-taka-sign mr-1"></i>${data.totalproEarnings || 0}
+    `;
+
+    document.getElementById("accountStatus").innerHTML = data.isPro
+      ? `<div class="inline-flex items-center gap-1 bg-yellow-400 bg-opacity-40 text-yellow-400 text-xs font-medium px-3 py-0.5 rounded-full border border-yellow-400">
+          <i class="fas fa-star text-sm"></i> Pro Member
+        </div>`
+      : `<div class="inline-flex items-center gap-1 bg-purple-600 bg-opacity-40 text-purple-300 text-xs font-medium px-3 py-0.5 rounded-full border border-purple-500">
+          <i class="fas fa-bolt text-sm"></i> Regular Member
+        </div>`;
+
+    if (data.isPro === true) {
+      renderDailyBonusButton("dailyBonusContainer");
+    }
+
+    document.getElementById("loadingOverlay").style.display = "none";
+  }
+});
+
 
     window.logout = async function () {
       await signOut(auth);
