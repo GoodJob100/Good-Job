@@ -127,6 +127,52 @@
     </div>
   </div>
 
+  <!-- Banner Carousel -->
+  <div class="w-full max-w-md mx-auto overflow-hidden mb-4">
+    <div id="carousel" class="whitespace-nowrap transition-transform duration-700 ease-in-out flex">
+      <!-- Slide 1 -->
+      <div class="min-w-full px-4">
+        <div class="bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-300 p-4 rounded-xl shadow-lg flex items-center gap-4 text-black">
+          <i class="fa-solid fa-gift text-2xl"></i>
+          <div class="flex-1">
+            <h3 class="text-md font-bold">Daily Bonus</h3>
+            <p class="text-xs">Claim your reward every 24 hours</p>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 2 -->
+      <div class="min-w-full px-4">
+        <div class="bg-gradient-to-r from-purple-500 via-pink-500 to-red-400 p-4 rounded-xl shadow-lg flex items-center gap-4 text-white">
+          <i class="fa-solid fa-star text-2xl"></i>
+          <div class="flex-1">
+            <h3 class="text-md font-bold">Pro Benefits</h3>
+            <p class="text-xs">More tasks, more earnings</p>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 3 -->
+      <div class="min-w-full px-4">
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-500 p-4 rounded-xl shadow-lg flex items-center gap-4 text-white">
+          <i class="fa-solid fa-briefcase text-2xl"></i>
+          <div class="flex-1">
+            <h3 class="text-md font-bold">Jobs Available</h3>
+            <p class="text-xs">Finish tasks to earn quickly</p>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 4 -->
+      <div class="min-w-full px-4">
+        <div class="bg-gradient-to-r from-green-500 to-emerald-400 p-4 rounded-xl shadow-lg flex items-center gap-4 text-white">
+          <i class="fa-solid fa-money-bill-wave text-2xl"></i>
+          <div class="flex-1">
+            <h3 class="text-md font-bold">Easy Withdraw</h3>
+            <p class="text-xs">Instant transfer anytime</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
    <!-- Main Content -->
   <main class="px-3 space-y-10">
     <!-- MAIN BALANCE SECTION-->
@@ -199,6 +245,29 @@
     </div>
     <span class="mt-1">Support</span>
   </a>
+</div>
+
+    <!-- Support Section -->
+<div class="bg-black rounded-md p-4 border border-gray-700 glow-yellow space-y-4">
+  <!-- Telegram Channel -->
+  <div class="bg-gradient-to-r from-blue-500 to-indigo-500 p-4 rounded-xl shadow-lg flex items-center gap-2 text-white border border-blue-300">
+    <i class="fa-brands fa-telegram text-3xl"></i>
+    <div class="flex-1">
+      <h3 class="text-md font-bold mb-1">Join Telegram Channel</h3>
+      <p class="text-xs text-white/80">Stay updated with the latest announcements</p>
+    </div>
+    <a href="https://t.me/goodjobofficialchannel" target="_blank" class="bg-white text-blue-600 px-3 py-1 text-sm rounded-md font-semibold shadow hover:bg-blue-100">Join</a>
+  </div>
+
+  <!-- Telegram Group -->
+  <div class="bg-gradient-to-r from-purple-600 to-pink-500 p-4 rounded-xl shadow-lg flex items-center gap-4 text-white border border-pink-300">
+    <i class="fa-brands fa-telegram text-3xl"></i>
+    <div class="flex-1">
+      <h3 class="text-md font-bold mb-1">Join Telegram Group</h3>
+      <p class="text-xs text-white/80">Chat and connect with our community</p>
+    </div>
+    <a href="https://t.me/goodjobofficialgroup" target="_blank" class="bg-white text-purple-700 px-3 py-1 text-sm rounded-md font-semibold shadow hover:bg-pink-100">Join</a>
+  </div>
 </div>
   </main>
 
@@ -297,6 +366,18 @@
     window.toggleProfile = function () {
       document.getElementById("profileModal").classList.toggle("hidden");
     };
+  </script>
+
+  <!-- Carousel Script -->
+  <script>
+    let index = 0;
+    const carousel = document.getElementById('carousel');
+    const totalSlides = carousel.children.length;
+
+    setInterval(() => {
+      index = (index + 1) % totalSlides;
+      carousel.style.transform = `translateX(-${index * 100}%)`;
+    }, 3000);
   </script>
 </body>
 </html>
