@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Team</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    .swal2-timer-progress-bar {
+      background: #facc15 !important;
+    }
+    .glow-yellow {
+      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
+    }
+    .loader {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 6px solid rgba(255, 255, 255, 0.15);
+      border-top-color: #facc15;
+      animation: spin 2s ease-in-out infinite;
+      box-shadow: 0 0 8px #facc15, inset 0 0 8px #facc15;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body class="bg-black text-white">
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="fixed inset-0 bg-black flex items-center justify-center z-50">
+    <div class="text-center">
+      <div class="loader mx-auto mb-4"></div>
+      <h1 class="text-2xl font-bold animate-pulse bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Good Job</h1>
+      <p class="text-gray-400 text-xs">Loading...</p>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="bg-black w-full max-w-md shadow-md py-2 px-3 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="bg-yellow-600 bg-opacity-50 border border-yellow-500 text-yellow-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
+        GJ
+      </div>
+      <h2 class="text-xl font-bold text-center bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Good Job</h2>
+    </div>
+    <div class="flex items-center gap-6 text-2xl text-gray-100">
+      <i class="fa-solid fa-headset font-bold text-1xl"></i>
+      <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700" onclick="toggleProfile()">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
+    </div>
+  </header>
+  
+  <!-- Main Content -->
+  <main class="px-3 max-w-md mx-auto mb-20">
+    <h1 class="text-xl text-yellow-300 font-bold mb-6">
+      <i class="fa-solid fa-users text-white text-xl text-yellow-300 mr-2"></i>My Team
+    </h1>
+
+    <div class="grid grid-cols-2 gap-6">
+      <div class="glow-yellow bg-black rounded-lg p-3 border border-gray-700">
+        <p class="text-sm text-gray-300">Total Team</p>
+        <h1 id="totalRefers" class="text-2xl font-bold text-yellow-300">0</h1>
+        <p class="text-sm text-gray-400">Direct referrals</p>
+      </div>
+
+      <div class="glow-yellow bg-black rounded-lg p-3 border border-gray-700">
+        <p class="text-sm text-gray-300">Total Earnings</p>
+        <h1 class="text-2xl font-bold text-yellow-300">৳<span id="totalReferEarnings">0.00</span></h1>
+        <p class="text-sm text-gray-400">All referral earnings</p>
+      </div>
+    </div>
+
+    <div class="glow-yellow bg-black mt-10 rounded-lg p-2 px-4 border border-gray-700">
+      <h2 class="text-md text-purple-400 font-semibold mb-4">Your Referral Earnings</h2>
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="bg-black rounded-lg p-3 border border-gray-700 shadow-6xl">
+          <p class="text-sm text-gray-300">Direct Referrals</p>
+          <h1 class="text-2xl font-bold text-yellow-300">৳0.00</h1>
+          <p class="text-sm text-gray-400">Direct commission</p>
+        </div>
+        <div class="bg-black rounded-lg p-3 border border-gray-700 shadow-6xl">
+          <p class="text-sm text-gray-300">Level 1</p>
+          <h1 class="text-2xl font-bold text-yellow-300">৳0.00</h1>
+          <p class="text-sm text-gray-400">Level 1 earnings</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4 mb-2">
+        <div class="bg-black rounded-lg p-3 border border-gray-700 shadow-6xl">
+          <p class="text-sm text-gray-300">Level 2</p>
+          <h1 class="text-2xl font-bold text-yellow-300">৳0.00</h1>
+          <p class="text-sm text-gray-400">Level 2 earnings</p>
+        </div>
+        <div class="bg-black rounded-lg p-3 border border-gray-700 shadow-6xl">
+          <p class="text-sm text-gray-300">Level 3</p>
+          <h1 class="text-2xl font-bold text-yellow-300">৳0.00</h1>
+          <p class="text-sm text-gray-400">Level 3 earnings</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-black rounded-md border border-gray-700 space-y-3 glow-yellow mb-4 mt-10">
+      <div class="p-4">
+      <ul id="referralHistoryList" class="space-y-4 text-sm text-gray-200"></ul>
+      </div>
+
+      <div class="bg-gray-900 bg-opacity-40 flex justify-between items-center mt-4 gap-3 rounded-b-lg">
+        <button id="prevBtn" class="px-4 py-2"><i class="fa-solid fa-angle-left"></i></button>
+        <span id="pageIndicator" class="text-sm text-gray-400"></span>
+        <button id="nextBtn" class="px-4 py-2"><i class="fa-solid fa-angle-right"></i></button>
+      </div>
+    </div>
+  </main>
+
+  <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 z-10">
+  <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+    <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <i class="fa-solid fa-house text-lg text-gray-300 hover:text-yellow-400"></i>
+    </div>
+    Home
+  </a>
+
+  <a href="job.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+    <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <i class="fa-solid fa-briefcase text-lg text-gray-300 hover:text-yellow-400"></i>
+    </div>
+    Job
+  </a>
+
+  <a href="pro-account.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+    <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <i class="fa-solid fa-star text-lg text-gray-300 hover:text-yellow-400"></i>
+    </div>
+    Pro
+  </a>
+
+  <a href="team.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+    <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <i class="fa-solid fa-users text-lg text-gray-300 hover:text-yellow-400"></i>
+    </div>
+    Team
+  </a>
+
+  <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+    <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
+      <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
+    </div> 
+    Profile
+  </a>
+  </nav>
+  
+  <!-- Firebase Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    function hideLoader() {
+      const loader = document.getElementById('loadingOverlay');
+      if (loader) loader.style.display = 'none';
+    }
+
+    let allReferrals = [];
+    let referBonus = 0;
+    const pageSize = 5;
+    let currentPage = 1;
+
+    function renderPage(page) {
+      const referralList = document.getElementById("referralHistoryList");
+      referralList.innerHTML = "";
+
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize;
+      const pageItems = allReferrals.slice(start, end);
+
+      if (pageItems.length === 0) {
+        referralList.innerHTML = "<li>No referrals yet.</li>";
+        return;
+      }
+
+      pageItems.forEach((data) => {
+        const username = data.username || "Unnamed";
+        const email = data.email || "No email";
+        const joined = data.createdAt
+          ? new Date(data.createdAt.seconds * 1000).toLocaleString()
+          : "Unknown";
+
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <div class="bg-gray-900 bg-opacity-50 rounded-lg p-3 border border-gray-700 mb-3">
+            <div class="flex justify-between items-center mb-2">
+              <div class="flex items-center gap-2 text-white">
+                <div class="w-8 h-8 bg-green-600 bg-opacity-40 text-black rounded-full flex items-center justify-center">
+                  <i class="fa-solid fa-user text-sm text-green-500"></i>
+                </div>
+                <span class="font-semibold">${username}</span>
+              </div>
+              <span class="text-sm text-yellow-300 font-medium bg-yellow-400 bg-opacity-40 px-2 rounded-full">Level 1</span>
+            </div>
+            <div class="flex justify-between items-center text-sm">
+              <div>
+                <p class="text-gray-400 mb-1">${email}</p>
+                <p class="text-xs text-gray-500">Joined: <span>${joined}</span></p>
+              </div>
+              <p class="text-green-500 font-bold text-sm">+৳${referBonus}</p>
+            </div>
+          </div>
+        `;
+        referralList.appendChild(li);
+      });
+
+      document.getElementById("pageIndicator").innerText = `Page ${currentPage} of ${Math.ceil(allReferrals.length / pageSize)}`;
+      document.getElementById("prevBtn").disabled = currentPage === 1;
+      document.getElementById("nextBtn").disabled = end >= allReferrals.length;
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      try {
+        const referQuery = query(collection(db, "users"), where("referredBy", "==", user.uid));
+        const referSnapshot = await getDocs(referQuery);
+        allReferrals = referSnapshot.docs.map(doc => doc.data());
+        const totalRefers = allReferrals.length;
+
+        const rewardDocRef = doc(db, "referSettings", "rewards");
+        const rewardSnap = await getDoc(rewardDocRef);
+        if (rewardSnap.exists()) {
+          referBonus = Number(rewardSnap.data().referBonus || 0);
+        }
+
+        const totalEarnings = totalRefers * referBonus;
+
+        document.getElementById("totalRefers").innerText = totalRefers;
+        document.getElementById("totalReferEarnings").innerText = totalEarnings;
+
+        renderPage(currentPage);
+
+        document.getElementById("prevBtn").addEventListener("click", () => {
+          if (currentPage > 1) {
+            currentPage--;
+            renderPage(currentPage);
+          }
+        });
+
+        document.getElementById("nextBtn").addEventListener("click", () => {
+          if ((currentPage * pageSize) < allReferrals.length) {
+            currentPage++;
+            renderPage(currentPage);
+          }
+        });
+
+      } catch (err) {
+        console.error("Error loading referrals:", err);
+      } finally {
+        hideLoader(); // Ensure loader hides after loading is complete
+      }
+    });
+  </script>
+</body>
+</html>
