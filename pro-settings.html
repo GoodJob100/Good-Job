@@ -91,7 +91,8 @@
     const proValidityInput = document.getElementById("proValidity");
     const updateProSettingsBtn = document.getElementById("updateProSettings");
 
-    const proSettingsDocRef = doc(db, "settings", "proAccount");
+    // 🔹 Collection name changed from "settings" → "plan"
+    const proSettingsDocRef = doc(db, "plan", "proAccount");
 
     onAuthStateChanged(auth, (user) => {
       if (!user) {
