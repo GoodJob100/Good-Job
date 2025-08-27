@@ -14,47 +14,54 @@
   <!-- Header -->
   <header class="bg-white shadow-md relative">
     <div class="max-w-7xl mx-auto px-4 py-3 relative flex items-center justify-center">
-      <!-- Back Icon (left side) -->
       <p onclick="window.location.href='/admin.html'" class="absolute left-4 text-gray-700 cursor-pointer">
         <i class="fas fa-arrow-left text-2xl"></i>
       </p>
-
-      <!-- Centered Title -->
       <h1 class="text-xl font-bold text-gray-800">Admin Panel</h1>
     </div>
   </header>
 
   <!-- Main Content -->
-  <main class="flex items-center justify-center p-4">
-    <div class="w-full max-w-md bg-white shadow-lg rounded-md p-6 sm:p-8 mt-10">
-      <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Pro Account Settings</h2>
+  <main class="flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-2xl bg-white shadow-lg rounded-md p-6 sm:p-8 mt-10">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Plan Settings</h2>
 
-      <form class="space-y-4">
+      <!-- Add New Plan Form -->
+      <form id="addPlanForm" class="space-y-4">
         <div>
-          <label class="block text-gray-700 font-medium mb-1" for="proActivationCost">Activation Cost (৳)</label>
-          <input id="proActivationCost" type="number" min="0" step="0.01"
-            class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" />
+          <label class="block text-gray-700 font-medium mb-1" for="planName">Plan Name</label>
+          <input id="planName" type="text" placeholder="e.g. Pro, Silver, Gold"
+            class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" required />
+        </div>
+        <div>
+          <label class="block text-gray-700 font-medium mb-1" for="activationCost">Activation Cost (৳)</label>
+          <input id="activationCost" type="number" min="0" step="0.01"
+            class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" required />
+        </div>
+        <div>
+          <label class="block text-gray-700 font-medium mb-1" for="dailyBonus">Daily Bonus (৳)</label>
+          <input id="dailyBonus" type="number" min="0" step="0.01"
+            class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" required />
+        </div>
+        <div>
+          <label class="block text-gray-700 font-medium mb-1" for="validity">Validity (days)</label>
+          <input id="validity" type="number" min="1" step="1"
+            class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" required />
         </div>
 
-        <div>
-          <label class="block text-gray-700 font-medium mb-1" for="proDailyBonus">Daily Bonus (৳)</label>
-          <input id="proDailyBonus" type="number" min="0" step="0.01"
-            class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" />
-        </div>
-
-        <div>
-          <label class="block text-gray-700 font-medium mb-1" for="proValidity">Validity (days)</label>
-          <input id="proValidity" type="number" min="1" step="1"
-            class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" />
+        <div class="mt-6">
+          <button type="submit"
+            class="w-full bg-blue-600 text-white text-center font-semibold py-2 px-4 rounded-md">
+            <i class="fas fa-plus mr-2"></i>Add / Update Plan
+          </button>
         </div>
       </form>
+    </div>
 
-      <div class="mt-6">
-        <p id="updateProSettings"
-          class="w-full bg-blue-600 text-white text-center font-semibold py-2 px-4 rounded-md cursor-pointer">
-          <i class="fas fa-save mr-2"></i>Update
-        </p>
-      </div>
+    <!-- All Plans List -->
+    <div class="w-full max-w-3xl bg-white shadow-lg rounded-md p-6 sm:p-8 mt-8">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">All Plans</h2>
+      <div id="plansList" class="space-y-4"></div>
     </div>
   </main>
 
@@ -63,9 +70,11 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import {
       getFirestore,
+      collection,
       doc,
-      getDoc,
-      setDoc
+      getDocs,
+      setDoc,
+      deleteDoc
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import {
       getAuth,
@@ -86,84 +95,95 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    const proActivationCostInput = document.getElementById("proActivationCost");
-    const proDailyBonusInput = document.getElementById("proDailyBonus");
-    const proValidityInput = document.getElementById("proValidity");
-    const updateProSettingsBtn = document.getElementById("updateProSettings");
+    const addPlanForm = document.getElementById("addPlanForm");
+    const plansList = document.getElementById("plansList");
 
-    // 🔹 Collection name changed from "settings" → "plan"
-    const proSettingsDocRef = doc(db, "plan", "proAccount");
+    const plansColRef = collection(db, "plan");
 
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         window.location.href = "login.html";
       } else {
-        loadProSettings();
+        loadPlans();
       }
     });
 
-    async function loadProSettings() {
+    // Load All Plans
+    async function loadPlans() {
+      plansList.innerHTML = "<p class='text-gray-500'>Loading...</p>";
       try {
-        const docSnap = await getDoc(proSettingsDocRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          proActivationCostInput.value = data.activationCost ?? "";
-          proDailyBonusInput.value = data.dailyBonus ?? "";
-          proValidityInput.value = data.validity ?? "";
-        }
+        const querySnapshot = await getDocs(plansColRef);
+        plansList.innerHTML = "";
+        querySnapshot.forEach((docSnap) => {
+          const plan = docSnap.data();
+          const div = document.createElement("div");
+          div.className = "border p-4 rounded-md shadow flex justify-between items-center";
+          div.innerHTML = `
+            <div>
+              <h3 class="text-lg font-bold text-gray-800">${docSnap.id}</h3>
+              <p class="text-gray-600">Activation Cost: ৳${plan.activationCost}</p>
+              <p class="text-gray-600">Daily Bonus: ৳${plan.dailyBonus}</p>
+              <p class="text-gray-600">Validity: ${plan.validity} days</p>
+            </div>
+            <button class="bg-red-500 text-white px-3 py-1 rounded-md deleteBtn" data-id="${docSnap.id}">
+              <i class="fas fa-trash"></i>
+            </button>
+          `;
+          plansList.appendChild(div);
+        });
+
+        // Attach delete events
+        document.querySelectorAll(".deleteBtn").forEach((btn) => {
+          btn.addEventListener("click", async (e) => {
+            const id = e.target.closest("button").dataset.id;
+            await deleteDoc(doc(db, "plan", id));
+            loadPlans();
+          });
+        });
+
       } catch (error) {
-        console.error("Error loading Pro Account Settings:", error);
+        console.error("Error loading plans:", error);
       }
     }
 
-    updateProSettingsBtn.addEventListener("click", async () => {
-      const activationCost = parseFloat(proActivationCostInput.value);
-      const dailyBonus = parseFloat(proDailyBonusInput.value);
-      const validity = parseInt(proValidityInput.value);
+    // Add / Update Plan
+    addPlanForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("planName").value.trim();
+      const activationCost = parseFloat(document.getElementById("activationCost").value);
+      const dailyBonus = parseFloat(document.getElementById("dailyBonus").value);
+      const validity = parseInt(document.getElementById("validity").value);
 
-      if (
-        isNaN(activationCost) || activationCost < 0 ||
-        isNaN(dailyBonus) || dailyBonus < 0 ||
-        isNaN(validity) || validity < 1
-      ) {
+      if (!name || isNaN(activationCost) || isNaN(dailyBonus) || isNaN(validity)) {
         Swal.fire({
           icon: "error",
-          title: "Please enter valid values for all fields.",
+          title: "Please fill all fields correctly",
           toast: true,
           position: "top-end",
           timer: 3000,
-          timerProgressBar: true,
           showConfirmButton: false
         });
         return;
       }
 
       try {
-        await setDoc(proSettingsDocRef, {
+        await setDoc(doc(db, "plan", name), {
           activationCost,
           dailyBonus,
           validity
         });
         Swal.fire({
           icon: "success",
-          title: "Updated successfully!",
+          title: "Plan saved!",
           toast: true,
           position: "top-end",
-          timer: 3000,
-          timerProgressBar: true,
+          timer: 2000,
           showConfirmButton: false
         });
+        addPlanForm.reset();
+        loadPlans();
       } catch (error) {
         console.error(error);
-        Swal.fire({
-          icon: "error",
-          title: "Please try again later.",
-          toast: true,
-          position: "top-end",
-          timer: 3000,
-          timerProgressBar: true,
-          showConfirmButton: false
-        });
       }
     });
   </script>
