@@ -35,28 +35,31 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
     try {
       const userRef = doc(db, "users", user.uid);
       const userSnap = await getDoc(userRef);
-      const userData = userSnap.data();
+      const userData = userSnap.data() || {};
 
-      const settingsRef = doc(db, "settings", "proAccount");
-      const settingsSnap = await getDoc(settingsRef);
-      const settings = settingsSnap.data();
-
-      const dailyBonus = settings.dailyBonus || 0;
-      const now = new Date();
-
-      const lastClaimDate = userData.lastBonusClaim?.toDate?.() ?? new Date(userData.lastBonusClaim || 0);
-      const isSameDay = (d1, d2) =>
-        d1.getFullYear() === d2.getFullYear() &&
-        d1.getMonth() === d2.getMonth() &&
-        d1.getDate() === d2.getDate();
-
+      // Check if user has an active pro plan
       const isPro = userData.isPro === true &&
-        new Date(userData.proExpiryTimestamp?.toDate?.() ?? userData.proExpiryTimestamp) > now;
+        new Date(userData.proExpiryTimestamp?.toDate?.() ?? userData.proExpiryTimestamp) > new Date();
 
       if (!isPro) {
         container.innerHTML = "";
         return;
       }
+
+      // Get the user's current plan
+      const userPlan = userData.proPlan || "Pro"; // default Pro if not set
+      const planRef = doc(db, "plan", userPlan);
+      const planSnap = await getDoc(planRef);
+      const planData = planSnap.exists() ? planSnap.data() : {};
+      const dailyBonus = planData.dailyBonus || 0;
+
+      const now = new Date();
+      const lastClaimDate = userData.lastBonusClaim?.toDate?.() ?? new Date(userData.lastBonusClaim || 0);
+
+      const isSameDay = (d1, d2) =>
+        d1.getFullYear() === d2.getFullYear() &&
+        d1.getMonth() === d2.getMonth() &&
+        d1.getDate() === d2.getDate();
 
       const alreadyClaimed = isSameDay(lastClaimDate, now);
 
@@ -64,7 +67,7 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
       container.innerHTML = alreadyClaimed
         ? ""
         : `
-        <section class="bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400 text-black mt-4 py-2 px-2 shadow-lg border border-yellow-400">
+        <section class="bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400 text-black mt-4 py-2 px-2 shadow-lg border border-yellow-400 rounded-md">
           <div class="flex items-center justify-between text-sm sm:text-base font-medium">
             <div class="flex items-center gap-2">
               <span class="text-xl">🎉</span>
@@ -95,7 +98,7 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
               lastBonusClaim: Timestamp.fromDate(new Date())
             });
             alert(`You received ৳${dailyBonus} as daily bonus.`);
-            container.innerHTML = ""; // Immediately hide bonus section after claiming
+            container.innerHTML = ""; // Hide bonus section after claiming
           } catch (err) {
             alert("Error claiming bonus: " + err.message);
           }
