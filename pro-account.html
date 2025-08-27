@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pro Account</title>
+  <title>Plans</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -19,23 +19,43 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
-    .glow-yellow { box-shadow: 0 0 5px rgba(234, 179, 8, 0.5); }
-    .swal2-timer-progress-bar { background: #facc15 !important; }
+    .glow-yellow {
+      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
+    }
+    .swal2-timer-progress-bar {
+      background: #facc15 !important;
+    }
 
     @keyframes borderGlow {
-      0%, 100% { border-color: #facc15; box-shadow: 0 0 20px #facc15; }
-      50% { border-color: #5f27cd; box-shadow: 0 0 20px #5f27cd; }
+      0%, 100% {
+        border-color: #facc15;
+        box-shadow: 0 0 20px #facc15;
+      }
+      50% {
+        border-color: #5f27cd;
+        box-shadow: 0 0 20px #5f27cd;
+      }
     }
-    .animate-borderGlow { animation: borderGlow 5s ease-in-out infinite; }
+
+    .animate-borderGlow {
+      animation: borderGlow 5s ease-in-out infinite;
+    }
 
     .loader {
-      width: 48px; height: 48px; border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
       border: 6px solid rgba(255, 255, 255, 0.15);
       border-top-color: #facc15;
       animation: spin 2s ease-in-out infinite;
       box-shadow: 0 0 8px #facc15, inset 0 0 8px #facc15;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 </head>
 
@@ -68,12 +88,10 @@
 
   <!-- Main Content -->
   <main class="px-4 mb-20 mt-8">
-
-    <!-- All Plans Section -->
-    <section id="plansContainer" class="space-y-6"></section>
-
+    <div id="plansContainer" class="space-y-10"></div>
   </main>
   
+  <!-- Hidden Fields -->
   <p id="isProStatus" class="hidden"></p>
   <p id="proExpiryDate" class="hidden"></p>
   <p id="proDailyBonus" class="hidden"></p>
@@ -83,27 +101,36 @@
     <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
       <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-house text-lg text-gray-300 hover:text-yellow-400"></i>
-      </div> Home
+      </div>
+      Home
     </a>
+
     <a href="job.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
       <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-briefcase text-lg text-gray-300 hover:text-yellow-400"></i>
-      </div> Job
+      </div>
+      Job
     </a>
+
     <a href="pro-account.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
       <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-star text-lg text-gray-300 hover:text-yellow-400"></i>
-      </div> Pro
+      </div>
+      Pro
     </a>
+
     <a href="team.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
       <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-users text-lg text-gray-300 hover:text-yellow-400"></i>
-      </div> Team
+      </div>
+      Team
     </a>
+
     <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
       <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
         <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
-      </div> Profile
+      </div> 
+      Profile
     </a>
   </nav>
 
@@ -112,6 +139,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { renderDailyBonusButton } from "./dailyBonus.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
@@ -132,75 +160,87 @@
       if (overlay) overlay.style.display = 'none';
     }
 
-    // 🔹 Load and Render All Plans
-    async function loadPlans(user) {
-      const plansContainer = document.getElementById("plansContainer");
-      plansContainer.innerHTML = "<p class='text-gray-400 text-center'>Loading plans...</p>";
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = "login.html";
 
-      const querySnapshot = await getDocs(collection(db, "plan"));
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+      const currentUserData = { uid: user.uid, ...userSnap.data() };
+
+      // Load All Plans
+      const plansSnap = await getDocs(collection(db, "plan"));
+      const plansContainer = document.getElementById("plansContainer");
       plansContainer.innerHTML = "";
 
-      querySnapshot.forEach((docSnap) => {
-        const plan = docSnap.data();
-        const planName = docSnap.id;
+      const now = new Date();
 
-        const div = document.createElement("section");
-        div.className = "relative bg-black p-5 rounded-xl border border-yellow-400 shadow-xl animate-borderGlow";
-        div.innerHTML = `
+      plansSnap.forEach((planDoc) => {
+        const plan = planDoc.data();
+        const planName = planDoc.id;
+
+        // Check user pro status
+        let isActive = false;
+        if (currentUserData.isPro && currentUserData.proPlan === planName && currentUserData.proExpiryTimestamp) {
+          const expiry = currentUserData.proExpiryTimestamp.toDate?.() ?? new Date(currentUserData.proExpiryTimestamp);
+          if (expiry > now) isActive = true;
+        }
+
+        const section = document.createElement("section");
+        section.className = "relative bg-black p-5 rounded-xl border border-yellow-400 shadow-xl overflow-hidden animate-borderGlow";
+
+        section.innerHTML = `
+          <div class="absolute -top-10 -right-10 w-72 h-72 bg-yellow-500 opacity-20 rounded-full filter blur-3xl z-0 animate-pulse"></div>
           <div class="relative z-10 text-center mb-5">
-            <h2 class="text-3xl font-extrabold text-yellow-400 drop-shadow-md mb-3 uppercase">${planName}</h2>
+            <h2 class="text-3xl font-extrabold text-yellow-400 drop-shadow-md mb-3 uppercase">${planName} Account</h2>
             <p class="text-gray-300 text-sm">Unlock premium features and boost your income journey.</p>
           </div>
-          <div class="relative z-10 space-y-6 bg-black shadow bg-opacity-50 rounded-2xl p-4 border border-gray-700">
+          <div class="relative z-10 space-y-6 bg-black bg-opacity-50 rounded-2xl p-4 border border-gray-700">
             <div class="text-center">
               <p class="text-xs uppercase text-gray-400 mb-1">Subscription Price</p>
               <h3 class="text-5xl font-black text-yellow-400 leading-tight">৳${plan.activationCost}</h3>
-              <p class="text-sm text-gray-400 mt-1">Valid for ${plan.validity} days</p>
+              <p class="text-sm text-gray-400 mt-1">Valid for ${plan.validity} days from activation</p>
             </div>
-            <div class="flex justify-center">
-              <button class="activateBtn bg-yellow-400 text-black font-bold py-3 px-8 rounded-full shadow-lg text-lg" data-plan="${planName}">
-                Activate ${planName}
+            <ul class="text-sm space-y-3 text-gray-200">
+              <li class="flex items-center gap-3"><span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400"><i class="fa-solid fa-bolt"></i></span> Earn faster</li>
+              <li class="flex items-center gap-3"><span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400"><i class="fa-solid fa-percent"></i></span> Daily Bonus ৳${plan.dailyBonus}</li>
+              <li class="flex items-center gap-3"><span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400"><i class="fa-solid fa-crown"></i></span> Premium tasks unlocked</li>
+            </ul>
+            <div class="flex flex-col items-center gap-3">
+              <button class="activateBtn bg-yellow-400 text-black font-bold py-3 px-8 rounded-full shadow-lg text-lg transform hover:scale-105"
+                data-plan="${planName}" ${isActive ? "disabled" : ""}>
+                ${isActive ? "Already Activated" : "Upgrade Now"}
               </button>
             </div>
           </div>
         `;
-        plansContainer.appendChild(div);
+        plansContainer.appendChild(section);
       });
 
-      // Attach activation event
-      document.querySelectorAll(".activateBtn").forEach(btn => {
+      // Handle Activate Button
+      document.querySelectorAll(".activateBtn").forEach((btn) => {
         btn.addEventListener("click", async () => {
           const planName = btn.dataset.plan;
-          const planSnap = await getDoc(doc(db, "plan", planName));
-          const plan = planSnap.data();
+          const planDoc = await getDoc(doc(db, "plan", planName));
+          if (!planDoc.exists()) return alert("Plan not found!");
+          const plan = planDoc.data();
 
-          const userRef = doc(db, "users", user.uid);
-          const userSnap = await getDoc(userRef);
-          const userData = userSnap.data();
-          const balance = userData.balance || 0;
+          const balance = currentUserData.balance || 0;
+          if (balance < plan.activationCost) return alert(`Insufficient balance. Need ৳${plan.activationCost}`);
 
-          if (balance < plan.activationCost) {
-            Swal.fire("Insufficient Balance", `You need ৳${plan.activationCost}`, "error");
-            return;
-          }
-
-          const expiry = new Date(Date.now() + plan.validity * 24 * 60 * 60 * 1000);
+          const expiry = new Date(now.getTime() + plan.validity * 24 * 60 * 60 * 1000);
           await updateDoc(userRef, {
             isPro: true,
-            balance: balance - plan.activationCost,
             proPlan: planName,
+            balance: balance - plan.activationCost,
             proExpiryTimestamp: Timestamp.fromDate(expiry)
           });
 
-          Swal.fire("Success!", `${planName} Activated!`, "success");
-          loadPlans(user);
+          alert(`${planName} Activated!`);
+          location.reload();
         });
       });
-    }
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
-      await loadPlans(user);
+      // Hide loader
       hideLoadingOverlay();
     });
   </script>
