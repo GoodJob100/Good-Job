@@ -19,48 +19,27 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
-    .glow-yellow {
-      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
-    }
-    .swal2-timer-progress-bar {
-      background: #facc15 !important;
-    }
+    .glow-yellow { box-shadow: 0 0 5px rgba(234, 179, 8, 0.5); }
+    .swal2-timer-progress-bar { background: #facc15 !important; }
 
     @keyframes borderGlow {
-      0%, 100% {
-        border-color: #facc15;
-        box-shadow: 0 0 20px #facc15;
-      }
-      50% {
-        border-color: #5f27cd;
-        box-shadow: 0 0 20px #5f27cd;
-      }
+      0%, 100% { border-color: #facc15; box-shadow: 0 0 20px #facc15; }
+      50% { border-color: #5f27cd; box-shadow: 0 0 20px #5f27cd; }
     }
-
-    .animate-borderGlow {
-      animation: borderGlow 5s ease-in-out infinite;
-    }
+    .animate-borderGlow { animation: borderGlow 5s ease-in-out infinite; }
 
     .loader {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
+      width: 48px; height: 48px; border-radius: 50%;
       border: 6px solid rgba(255, 255, 255, 0.15);
       border-top-color: #facc15;
       animation: spin 2s ease-in-out infinite;
       box-shadow: 0 0 8px #facc15, inset 0 0 8px #facc15;
     }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 
 <body class="bg-black text-white">
-  
   <!-- Loader Screen -->
   <div id="loadingOverlay" class="fixed inset-0 bg-black flex items-center justify-center z-50">
     <div class="text-center">
@@ -80,7 +59,7 @@
     </div>
     <div class="flex items-center gap-6 text-2xl text-gray-100">
       <i class="fa-solid fa-headset font-bold text-1xl"></i>
-      <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700" onclick="toggleProfile()">
+      <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700">
         <i class="fa-solid fa-ellipsis-vertical"></i>
       </div>
     </div>
@@ -91,7 +70,7 @@
     <div id="plansContainer" class="space-y-10"></div>
   </main>
   
-  <!-- Hidden Fields -->
+  <!-- Hidden Fields (reserved) -->
   <p id="isProStatus" class="hidden"></p>
   <p id="proExpiryDate" class="hidden"></p>
   <p id="proDailyBonus" class="hidden"></p>
@@ -138,8 +117,11 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { renderDailyBonusButton } from "./dailyBonus.js";
+    import { 
+      getFirestore, collection, getDocs, doc, getDoc, updateDoc, runTransaction, Timestamp 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    // Keep if you render daily bonus elsewhere
+    // import { renderDailyBonusButton } from "./dailyBonus.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
@@ -160,88 +142,201 @@
       if (overlay) overlay.style.display = 'none';
     }
 
+    // Utility: check if specific plan is active for user (supports both new proPlans and old single fields)
+    function isPlanActiveForUser(userData, planName, now = new Date()) {
+      // New structure
+      if (userData?.proPlans && userData.proPlans[planName]) {
+        const p = userData.proPlans[planName];
+        const expiry = p.expiry?.toDate?.() ?? new Date(p.expiry);
+        return expiry > now;
+      }
+      // Backward compatibility (single-plan structure)
+      if (userData?.isPro && userData?.proPlan === planName && userData?.proExpiryTimestamp) {
+        const expiry = userData.proExpiryTimestamp.toDate?.() ?? new Date(userData.proExpiryTimestamp);
+        return expiry > now;
+      }
+      return false;
+    }
+
     onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
+      try {
+        if (!user) return window.location.href = "login.html";
 
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
-      const currentUserData = { uid: user.uid, ...userSnap.data() };
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+        const currentUserData = { uid: user.uid, ...(userSnap.data() || {}) };
 
-      // Load All Plans
-      const plansSnap = await getDocs(collection(db, "plan"));
-      const plansContainer = document.getElementById("plansContainer");
-      plansContainer.innerHTML = "";
+        const plansSnap = await getDocs(collection(db, "plan"));
+        const plansContainer = document.getElementById("plansContainer");
+        plansContainer.innerHTML = "";
 
-      const now = new Date();
+        const now = new Date();
 
-      plansSnap.forEach((planDoc) => {
-        const plan = planDoc.data();
-        const planName = planDoc.id;
+        // Render each plan card
+        const planDocs = [];
+        plansSnap.forEach((planDoc) => planDocs.push(planDoc)); // Keep order
 
-        // Check user pro status
-        let isActive = false;
-        if (currentUserData.isPro && currentUserData.proPlan === planName && currentUserData.proExpiryTimestamp) {
-          const expiry = currentUserData.proExpiryTimestamp.toDate?.() ?? new Date(currentUserData.proExpiryTimestamp);
-          if (expiry > now) isActive = true;
+        for (const planDoc of planDocs) {
+          const plan = planDoc.data();
+          const planName = planDoc.id;
+
+          const active = isPlanActiveForUser(currentUserData, planName, now);
+
+          const section = document.createElement("section");
+          section.className = "relative bg-black p-5 rounded-xl border border-yellow-400 shadow-xl overflow-hidden animate-borderGlow";
+
+          const validityText = plan.validity ? `${plan.validity} days` : "N/A";
+
+          section.innerHTML = `
+            <div class="absolute -top-10 -right-10 w-72 h-72 bg-yellow-500 opacity-20 rounded-full filter blur-3xl z-0 animate-pulse"></div>
+            <div class="relative z-10 text-center mb-5">
+              <h2 class="text-3xl font-extrabold text-yellow-400 drop-shadow-md mb-3 uppercase">${planName}</h2>
+              <p class="text-gray-300 text-sm">Unlock premium features and boost your income journey.</p>
+            </div>
+            <div class="relative z-10 space-y-6 bg-black bg-opacity-50 rounded-2xl p-4 border border-gray-700">
+              <div class="text-center">
+                <p class="text-xs uppercase text-gray-400 mb-1">Subscription Price</p>
+                <h3 class="text-5xl font-black text-yellow-400 leading-tight">৳${plan.activationCost}</h3>
+                <p class="text-sm text-gray-400 mt-1">Valid for ${validityText} from activation</p>
+              </div>
+              <ul class="text-sm space-y-3 text-gray-200">
+                <li class="flex items-center gap-3">
+                  <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400"><i class="fa-solid fa-bolt"></i></span>
+                  Earn faster
+                </li>
+                <li class="flex items-center gap-3">
+                  <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400"><i class="fa-solid fa-percent"></i></span>
+                  Daily Bonus ৳${plan.dailyBonus}
+                </li>
+                <li class="flex items-center gap-3">
+                  <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400"><i class="fa-solid fa-crown"></i></span>
+                  Premium tasks unlocked
+                </li>
+              </ul>
+              <div class="flex flex-col items-center gap-3">
+                <button class="activateBtn bg-yellow-400 text-black font-bold py-3 px-8 rounded-full shadow-lg text-lg transform hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed"
+                  data-plan="${planName}" ${active ? "disabled" : ""}>
+                  ${active ? "Already Activated" : "Activate"}
+                </button>
+                ${
+                  active 
+                  ? `<span class="text-green-400 text-xs">This plan is currently active for your account.</span>`
+                  : ``
+                }
+              </div>
+            </div>
+          `;
+          plansContainer.appendChild(section);
         }
 
-        const section = document.createElement("section");
-        section.className = "relative bg-black p-5 rounded-xl border border-yellow-400 shadow-xl overflow-hidden animate-borderGlow";
+        // Handle Activate Button with Transaction (safe balance deduction + multiple plan support)
+        document.querySelectorAll(".activateBtn").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const planName = btn.dataset.plan;
 
-        section.innerHTML = `
-          <div class="absolute -top-10 -right-10 w-72 h-72 bg-yellow-500 opacity-20 rounded-full filter blur-3xl z-0 animate-pulse"></div>
-          <div class="relative z-10 text-center mb-5">
-            <h2 class="text-3xl font-extrabold text-yellow-400 drop-shadow-md mb-3 uppercase">${planName}</h2>
-            <p class="text-gray-300 text-sm">Unlock premium features and boost your income journey.</p>
-          </div>
-          <div class="relative z-10 space-y-6 bg-black bg-opacity-50 rounded-2xl p-4 border border-gray-700">
-            <div class="text-center">
-              <p class="text-xs uppercase text-gray-400 mb-1">Subscription Price</p>
-              <h3 class="text-5xl font-black text-yellow-400 leading-tight">৳${plan.activationCost}</h3>
-              <p class="text-sm text-gray-400 mt-1">Valid for ${plan.validity} days from activation</p>
-            </div>
-            <ul class="text-sm space-y-3 text-gray-200">
-              <li class="flex items-center gap-3"><span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400"><i class="fa-solid fa-bolt"></i></span> Earn faster</li>
-              <li class="flex items-center gap-3"><span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400"><i class="fa-solid fa-percent"></i></span> Daily Bonus ৳${plan.dailyBonus}</li>
-              <li class="flex items-center gap-3"><span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400"><i class="fa-solid fa-crown"></i></span> Premium tasks unlocked</li>
-            </ul>
-            <div class="flex flex-col items-center gap-3">
-              <button class="activateBtn bg-yellow-400 text-black font-bold py-3 px-8 rounded-full shadow-lg text-lg transform hover:scale-105"
-                data-plan="${planName}" ${isActive ? "disabled" : ""}>
-                ${isActive ? "Already Activated" : "Upgrade Now"}
-              </button>
-            </div>
-          </div>
-        `;
-        plansContainer.appendChild(section);
-      });
+            try {
+              btn.disabled = true;
 
-      // Handle Activate Button
-      document.querySelectorAll(".activateBtn").forEach((btn) => {
-        btn.addEventListener("click", async () => {
-          const planName = btn.dataset.plan;
-          const planDoc = await getDoc(doc(db, "plan", planName));
-          if (!planDoc.exists()) return alert("Plan not found!");
-          const plan = planDoc.data();
+              await runTransaction(db, async (transaction) => {
+                const userRef = doc(db, "users", user.uid);
+                const planRef = doc(db, "plan", planName);
 
-          const balance = currentUserData.balance || 0;
-          if (balance < plan.activationCost) return alert(`Insufficient balance. Need ৳${plan.activationCost}`);
+                const [userDoc, planDoc] = await Promise.all([
+                  transaction.get(userRef),
+                  transaction.get(planRef),
+                ]);
 
-          const expiry = new Date(now.getTime() + plan.validity * 24 * 60 * 60 * 1000);
-          await updateDoc(userRef, {
-            isPro: true,
-            proPlan: planName,
-            balance: balance - plan.activationCost,
-            proExpiryTimestamp: Timestamp.fromDate(expiry)
+                if (!planDoc.exists()) {
+                  throw new Error("Plan not found!");
+                }
+
+                const userData = userDoc.data() || {};
+                const plan = planDoc.data();
+
+                const nowTs = new Date();
+
+                // If already active, block
+                const alreadyActive = (() => {
+                  if (userData?.proPlans && userData.proPlans[planName]) {
+                    const expiry = userData.proPlans[planName].expiry?.toDate?.() ?? new Date(userData.proPlans[planName].expiry);
+                    return expiry > nowTs;
+                  }
+                  if (userData?.isPro && userData?.proPlan === planName && userData?.proExpiryTimestamp) {
+                    const expiry = userData.proExpiryTimestamp.toDate?.() ?? new Date(userData.proExpiryTimestamp);
+                    return expiry > nowTs;
+                  }
+                  return false;
+                })();
+
+                if (alreadyActive) {
+                  throw new Error("This plan is already active.");
+                }
+
+                const currentBalance = Number(userData.balance || 0);
+                const activationCost = Number(plan.activationCost || 0);
+                const validityDays = Number(plan.validity || 0);
+                const dailyBonus = Number(plan.dailyBonus || 0);
+
+                if (currentBalance < activationCost) {
+                  throw new Error(`Insufficient balance. Need ৳${activationCost}`);
+                }
+
+                // Calculate expiry
+                const expiryDate = new Date(nowTs.getTime() + validityDays * 24 * 60 * 60 * 1000);
+
+                // Prepare updates
+                const updates = {
+                  balance: currentBalance - activationCost,
+                  isPro: true, // at least one plan active
+                  // For backward compatibility, keep latest activated plan info
+                  proPlan: planName,
+                  proExpiryTimestamp: Timestamp.fromDate(expiryDate),
+                };
+
+                // Set nested field: proPlans.<planName>
+                updates[`proPlans.${planName}`] = {
+                  expiry: Timestamp.fromDate(expiryDate),
+                  dailyBonus: dailyBonus,
+                  activatedAt: Timestamp.fromDate(nowTs),
+                  activationCost: activationCost,
+                  validity: validityDays
+                };
+
+                transaction.update(userRef, updates);
+              });
+
+              await Swal.fire({
+                icon: "success",
+                title: `${planName} Activated!`,
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true
+              });
+              location.reload();
+            } catch (err) {
+              await Swal.fire({
+                icon: "error",
+                title: "Activation Failed",
+                text: err.message || "Something went wrong",
+                confirmButtonColor: "#facc15"
+              });
+              btn.disabled = false;
+            }
           });
-
-          alert(`${planName} Activated!`);
-          location.reload();
         });
-      });
 
-      // Hide loader
-      hideLoadingOverlay();
+        // Done
+        hideLoadingOverlay();
+      } catch (error) {
+        console.error(error);
+        hideLoadingOverlay();
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: error?.message || "Failed to load plans",
+          confirmButtonColor: "#facc15"
+        });
+      }
     });
   </script>
 </body>
