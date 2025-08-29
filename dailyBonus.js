@@ -37,25 +37,26 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
       const userSnap = await getDoc(userRef);
       const userData = userSnap.data() || {};
 
-      // Check if user has an active pro plan
-      const isPro = userData.isPro === true &&
-        new Date(userData.proExpiryTimestamp?.toDate?.() ?? userData.proExpiryTimestamp) > new Date();
+      // user এর activePlans array থেকে valid plan filter
+      const activePlans = userData.activePlans || [];
+      const now = new Date();
+      const validPlans = activePlans.filter(
+        (p) => p.expiry?.toDate?.() > now
+      );
 
-      if (!isPro) {
+      if (validPlans.length === 0) {
         container.innerHTML = "";
         return;
       }
 
-      // Get the user's current plan
-      const userPlan = userData.proPlan || "Pro"; // default Pro if not set
-      const planRef = doc(db, "plan", userPlan);
-      const planSnap = await getDoc(planRef);
-      const planData = planSnap.exists() ? planSnap.data() : {};
-      const dailyBonus = planData.dailyBonus || 0;
+      // সব প্ল্যানের dailyBonus যোগ করা
+      let totalDailyBonus = 0;
+      validPlans.forEach((plan) => {
+        totalDailyBonus += plan.dailyBonus || 0;
+      });
 
-      const now = new Date();
+      // check last claim
       const lastClaimDate = userData.lastBonusClaim?.toDate?.() ?? new Date(userData.lastBonusClaim || 0);
-
       const isSameDay = (d1, d2) =>
         d1.getFullYear() === d2.getFullYear() &&
         d1.getMonth() === d2.getMonth() &&
@@ -74,7 +75,7 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
               <div>
                 <p class="text-sm sm:text-base font-semibold text-purple-800">Daily Bonus Available</p>
                 <p class="text-xs sm:text-sm text-gray-700">
-                  Pro Account users can claim <span class="text-green-800 font-bold">৳${dailyBonus}</span> today!
+                  Active Plans total bonus: <span class="text-green-800 font-bold">৳${totalDailyBonus}</span>
                 </p>
               </div>
             </div>
@@ -92,13 +93,13 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
         const claimBtn = document.getElementById("claimBonusBtn");
         claimBtn.onclick = async () => {
           try {
-            const newBalance = (userData.balance || 0) + dailyBonus;
+            const newBalance = (userData.balance || 0) + totalDailyBonus;
             await updateDoc(userRef, {
               balance: newBalance,
               lastBonusClaim: Timestamp.fromDate(new Date())
             });
-            alert(`You received ৳${dailyBonus} as daily bonus.`);
-            container.innerHTML = ""; // Hide bonus section after claiming
+            alert(`You received ৳${totalDailyBonus} as daily bonus.`);
+            container.innerHTML = ""; // Hide after claim
           } catch (err) {
             alert("Error claiming bonus: " + err.message);
           }
