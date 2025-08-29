@@ -25,7 +25,6 @@
     .swal2-timer-progress-bar {
       background: #facc15 !important;
     }
-
     @keyframes borderGlow {
       0%, 100% {
         border-color: #facc15;
@@ -36,11 +35,9 @@
         box-shadow: 0 0 20px #5f27cd;
       }
     }
-
     .animate-borderGlow {
       animation: borderGlow 5s ease-in-out infinite;
     }
-
     .loader {
       width: 48px;
       height: 48px;
@@ -50,11 +47,8 @@
       animation: spin 2s ease-in-out infinite;
       box-shadow: 0 0 8px #facc15, inset 0 0 8px #facc15;
     }
-
     @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -91,11 +85,6 @@
     <div id="plansContainer" class="space-y-10"></div>
   </main>
   
-  <!-- Hidden Fields -->
-  <p id="isProStatus" class="hidden"></p>
-  <p id="proExpiryDate" class="hidden"></p>
-  <p id="proDailyBonus" class="hidden"></p>
-
   <!-- Bottom Navigation Bar -->
   <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 z-10">
     <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
@@ -104,28 +93,24 @@
       </div>
       Home
     </a>
-
     <a href="job.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
       <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-briefcase text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       Job
     </a>
-
     <a href="pro-account.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
       <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-star text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       Pro
     </a>
-
     <a href="team.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
       <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-users text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       Team
     </a>
-
     <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
       <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
         <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
@@ -139,7 +124,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { renderDailyBonusButton } from "./dailyBonus.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
@@ -167,6 +151,9 @@
       const userSnap = await getDoc(userRef);
       const currentUserData = { uid: user.uid, ...userSnap.data() };
 
+      // যদি user এর activePlans না থাকে তবে খালি array বানানো
+      const activePlans = currentUserData.activePlans || [];
+
       // Load All Plans
       const plansSnap = await getDocs(collection(db, "plan"));
       const plansContainer = document.getElementById("plansContainer");
@@ -178,11 +165,11 @@
         const plan = planDoc.data();
         const planName = planDoc.id;
 
-        // Check user pro status
+        // Check if this plan is already active
         let isActive = false;
-        if (currentUserData.isPro && currentUserData.proPlan === planName && currentUserData.proExpiryTimestamp) {
-          const expiry = currentUserData.proExpiryTimestamp.toDate?.() ?? new Date(currentUserData.proExpiryTimestamp);
-          if (expiry > now) isActive = true;
+        const activePlan = activePlans.find(p => p.name === planName);
+        if (activePlan && activePlan.expiry && activePlan.expiry.toDate?.() > now) {
+          isActive = true;
         }
 
         const section = document.createElement("section");
@@ -198,7 +185,7 @@
             <div class="text-center">
               <p class="text-xs uppercase text-gray-400 mb-1">Subscription Price</p>
               <h3 class="text-5xl font-black text-yellow-400 leading-tight">৳${plan.activationCost}</h3>
-              <p class="text-sm text-gray-400 mt-1">Valid for ${plan.validity} days from activation</p>
+              <p class="text-sm text-gray-400 mt-1">Valid for ${plan.validity} days</p>
             </div>
             <ul class="text-sm space-y-3 text-gray-200">
               <li class="flex items-center gap-3"><span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400"><i class="fa-solid fa-bolt"></i></span> Earn faster</li>
@@ -208,7 +195,7 @@
             <div class="flex flex-col items-center gap-3">
               <button class="activateBtn bg-yellow-400 text-black font-bold py-3 px-8 rounded-full shadow-lg text-lg transform hover:scale-105"
                 data-plan="${planName}" ${isActive ? "disabled" : ""}>
-                ${isActive ? "Already Activated" : "Upgrade Now"}
+                ${isActive ? "Already Activated" : "Activate Now"}
               </button>
             </div>
           </div>
@@ -228,11 +215,17 @@
           if (balance < plan.activationCost) return alert(`Insufficient balance. Need ৳${plan.activationCost}`);
 
           const expiry = new Date(now.getTime() + plan.validity * 24 * 60 * 60 * 1000);
+
+          // নতুন activePlans array তে plan push করা
+          const updatedPlans = [...activePlans, {
+            name: planName,
+            expiry: Timestamp.fromDate(expiry),
+            dailyBonus: plan.dailyBonus
+          }];
+
           await updateDoc(userRef, {
-            isPro: true,
-            proPlan: planName,
             balance: balance - plan.activationCost,
-            proExpiryTimestamp: Timestamp.fromDate(expiry)
+            activePlans: updatedPlans
           });
 
           alert(`${planName} Activated!`);
