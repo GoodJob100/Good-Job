@@ -48,6 +48,11 @@
           <input id="validity" type="number" min="1" step="1"
             class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" required />
         </div>
+        <div>
+          <label class="block text-gray-700 font-medium mb-1" for="referralBonus">Referral Bonus (৳)</label>
+          <input id="referralBonus" type="number" min="0" step="0.01"
+            class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" required />
+        </div>
 
         <div class="mt-6">
           <button type="submit"
@@ -124,6 +129,7 @@
               <p class="text-gray-600">Activation Cost: ৳${plan.activationCost}</p>
               <p class="text-gray-600">Daily Bonus: ৳${plan.dailyBonus}</p>
               <p class="text-gray-600">Validity: ${plan.validity} days</p>
+              <p class="text-gray-600">Referral Bonus: ৳${plan.referralBonus ?? 0}</p>
             </div>
             <button class="bg-red-500 text-white px-3 py-1 rounded-md deleteBtn" data-id="${docSnap.id}">
               <i class="fas fa-trash"></i>
@@ -153,8 +159,9 @@
       const activationCost = parseFloat(document.getElementById("activationCost").value);
       const dailyBonus = parseFloat(document.getElementById("dailyBonus").value);
       const validity = parseInt(document.getElementById("validity").value);
+      const referralBonus = parseFloat(document.getElementById("referralBonus").value);
 
-      if (!name || isNaN(activationCost) || isNaN(dailyBonus) || isNaN(validity)) {
+      if (!name || isNaN(activationCost) || isNaN(dailyBonus) || isNaN(validity) || isNaN(referralBonus)) {
         Swal.fire({
           icon: "error",
           title: "Please fill all fields correctly",
@@ -170,7 +177,8 @@
         await setDoc(doc(db, "plan", name), {
           activationCost,
           dailyBonus,
-          validity
+          validity,
+          referralBonus
         });
         Swal.fire({
           icon: "success",
