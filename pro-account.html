@@ -151,10 +151,7 @@
       const userSnap = await getDoc(userRef);
       const currentUserData = { uid: user.uid, ...userSnap.data() };
 
-      // যদি user এর activePlans না থাকে তবে খালি array বানানো
       const activePlans = currentUserData.activePlans || [];
-
-      // Load All Plans
       const plansSnap = await getDocs(collection(db, "plan"));
       const plansContainer = document.getElementById("plansContainer");
       plansContainer.innerHTML = "";
@@ -165,7 +162,6 @@
         const plan = planDoc.data();
         const planName = planDoc.id;
 
-        // Check if this plan is already active
         let isActive = false;
         const activePlan = activePlans.find(p => p.name === planName);
         if (activePlan && activePlan.expiry && activePlan.expiry.toDate?.() > now) {
@@ -216,24 +212,37 @@
 
           const expiry = new Date(now.getTime() + plan.validity * 24 * 60 * 60 * 1000);
 
-          // নতুন activePlans array তে plan push করা
           const updatedPlans = [...activePlans, {
             name: planName,
             expiry: Timestamp.fromDate(expiry),
             dailyBonus: plan.dailyBonus
           }];
 
+          // Update user balance + activePlans
           await updateDoc(userRef, {
             balance: balance - plan.activationCost,
             activePlans: updatedPlans
           });
+
+          // ✅ Referral Bonus System
+          if (currentUserData.referredBy) {
+            const refUserRef = doc(db, "users", currentUserData.referredBy);
+            const refUserSnap = await getDoc(refUserRef);
+            if (refUserSnap.exists()) {
+              const refUserData = refUserSnap.data();
+              const refBalance = refUserData.balance || 0;
+
+              await updateDoc(refUserRef, {
+                balance: refBalance + (plan.referralBonus || 0)
+              });
+            }
+          }
 
           alert(`${planName} Activated!`);
           location.reload();
         });
       });
 
-      // Hide loader
       hideLoadingOverlay();
     });
   </script>
