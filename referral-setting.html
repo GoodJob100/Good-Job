@@ -65,7 +65,7 @@
 <script type="module">
   // Firebase imports
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
   // Firebase config
@@ -85,16 +85,20 @@
 
   // Load Settings
   async function loadSettings() {
-    const docRef = doc(db, "settings", "rewards");
     try {
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        document.getElementById("referralBonusInput").value = data.referBonus || 0;
-        document.getElementById("minWithdrawInput").value = data.minWithdraw || 0;
-        document.getElementById("minDepositInput").value = data.minDeposit || 0;
-      } else {
-        document.getElementById("settingsStatus").textContent = "Settings not found.";
+      const referSnap = await getDoc(doc(db, "settings", "referralBonus"));
+      if (referSnap.exists()) {
+        document.getElementById("referralBonusInput").value = referSnap.data().value || 0;
+      }
+
+      const withdrawSnap = await getDoc(doc(db, "settings", "minWithdraw"));
+      if (withdrawSnap.exists()) {
+        document.getElementById("minWithdrawInput").value = withdrawSnap.data().value || 0;
+      }
+
+      const depositSnap = await getDoc(doc(db, "settings", "minDeposit"));
+      if (depositSnap.exists()) {
+        document.getElementById("minDepositInput").value = depositSnap.data().value || 0;
       }
     } catch (error) {
       console.error("Error loading settings:", error);
@@ -102,7 +106,7 @@
     }
   }
 
-  // Update Settings
+  // Update Settings (each one in its own document)
   document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("updateSettingsBtn").addEventListener("click", async () => {
       const newBonus = parseFloat(document.getElementById("referralBonusInput").value);
@@ -114,13 +118,11 @@
         return;
       }
 
-      const docRef = doc(db, "settings", "rewards");
       try {
-        await updateDoc(docRef, {
-          referBonus: newBonus,
-          minWithdraw: newMinWithdraw,
-          minDeposit: newMinDeposit
-        });
+        await setDoc(doc(db, "settings", "referralBonus"), { value: newBonus });
+        await setDoc(doc(db, "settings", "minWithdraw"), { value: newMinWithdraw });
+        await setDoc(doc(db, "settings", "minDeposit"), { value: newMinDeposit });
+
         document.getElementById("settingsStatus").textContent = "Settings updated successfully.";
       } catch (error) {
         console.error("Error updating settings:", error);
