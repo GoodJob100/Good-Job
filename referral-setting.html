@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pro Account Settings</title>
+  <title>Settings</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
@@ -27,92 +27,116 @@
    <!-- Main Content -->
   <main class="flex items-center justify-center p-4">
     <div class="w-full max-w-md bg-white shadow-lg rounded-md p-6 sm:p-8 mt-10">
-      <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Referral Bonus Settings</h2>
+      <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Settings</h2>
 
       <form class="space-y-4">
+        <!-- Referral Bonus -->
         <div>
           <label class="block text-gray-700 font-medium mb-1" for="referralBonusInput">Referral Bonus (৳)</label>
           <input id="referralBonusInput" type="number" min="0" step="0.01"
-            class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" />
+            class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" value="0" />
+        </div>
+
+        <!-- Minimum Withdraw -->
+        <div>
+          <label class="block text-gray-700 font-medium mb-1" for="minWithdrawInput">Minimum Withdraw (৳)</label>
+          <input id="minWithdrawInput" type="number" min="0" step="0.01"
+            class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" value="0" />
+        </div>
+
+        <!-- Minimum Deposit -->
+        <div>
+          <label class="block text-gray-700 font-medium mb-1" for="minDepositInput">Minimum Deposit (৳)</label>
+          <input id="minDepositInput" type="number" min="0" step="0.01"
+            class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" value="0" />
         </div>
       </form>
 
       <div class="mt-6">
-        <p id="updateReferralBonusBtn"
+        <p id="updateSettingsBtn"
           class="w-full bg-blue-600 text-white text-center font-semibold py-2 px-4 rounded-md cursor-pointer">
-          <i class="fas fa-save mr-2"></i>Update Bonus
+          <i class="fas fa-save mr-2"></i>Update Settings
         </p>
       </div>
-      <p id="referralBonusStatus" class="text-sm mt-4 text-gray-700 text-center sm:text-left"></p>
+      <p id="settingsStatus" class="text-sm mt-4 text-gray-700 text-center sm:text-left"></p>
     </div>
   </main>
 
 <script type="module">
-    // Firebase imports
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+  // Firebase imports
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
-    // Firebase config (replace with yours)
-    const firebaseConfig = {
-      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
-      authDomain: "bdwork-346d3.firebaseapp.com",
-      projectId: "bdwork-346d3",
-      storageBucket: "bdwork-346d3.appspot.com",
-      messagingSenderId: "900963179093",
-      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
-      measurementId: "G-FM1YJ8E5GK"
-    };
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+    authDomain: "bdwork-346d3.firebaseapp.com",
+    projectId: "bdwork-346d3",
+    storageBucket: "bdwork-346d3.appspot.com",
+    messagingSenderId: "900963179093",
+    appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+    measurementId: "G-FM1YJ8E5GK"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
 
-    // Load Referral Bonus
-    async function loadReferralBonus() {
-      const docRef = doc(db, "referSettings", "rewards");
-      try {
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const bonus = docSnap.data().referBonus || 0;
-          document.getElementById("referralBonusInput").value = bonus;
-        } else {
-          document.getElementById("referralBonusStatus").textContent = "Referral bonus setting not found.";
-        }
-      } catch (error) {
-        console.error("Error loading referral bonus:", error);
-        document.getElementById("referralBonusStatus").textContent = "Error loading referral bonus.";
-      }
-    }
+  // Load Settings
+  async function loadSettings() {
+    const docRef = doc(db, "settings", "rewards");
+    try {
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        document.getElementById("referralBonusInput").value = data.referBonus || 0;
+        document.getElementById("minWithdrawInput").value = data.minWithdraw || 0;
+        document.getElementById("minDepositInput").value = data.minDeposit || 0;
+      } else {
+        document.getElementById("settingsStatus").textContent = "Settings not found.";
+      }
+    } catch (error) {
+      console.error("Error loading settings:", error);
+      document.getElementById("settingsStatus").textContent = "Error loading settings.";
+    }
+  }
 
-    // Update Referral Bonus
-    document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("updateReferralBonusBtn").addEventListener("click", async () => {
-        const newBonus = parseFloat(document.getElementById("referralBonusInput").value);
-        if (isNaN(newBonus) || newBonus < 0) {
-          alert("Please enter a valid non-negative number.");
-          return;
-        }
+  // Update Settings
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("updateSettingsBtn").addEventListener("click", async () => {
+      const newBonus = parseFloat(document.getElementById("referralBonusInput").value);
+      const newMinWithdraw = parseFloat(document.getElementById("minWithdrawInput").value);
+      const newMinDeposit = parseFloat(document.getElementById("minDepositInput").value);
 
-        const docRef = doc(db, "referSettings", "rewards");
-        try {
-          await updateDoc(docRef, { referBonus: newBonus });
-          document.getElementById("referralBonusStatus").textContent = "Referral bonus updated successfully.";
-        } catch (error) {
-          console.error("Error updating referral bonus:", error);
-          document.getElementById("referralBonusStatus").textContent = "Failed to update referral bonus.";
-        }
-      });
-    });
+      if (isNaN(newBonus) || newBonus < 0 || isNaN(newMinWithdraw) || newMinWithdraw < 0 || isNaN(newMinDeposit) || newMinDeposit < 0) {
+        alert("Please enter valid non-negative numbers.");
+        return;
+      }
 
-    // Auth check and init
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        loadReferralBonus();
-      } else {
-        document.getElementById("referralBonusStatus").textContent = "Please log in as admin.";
-      }
-    });
-  </script>
+      const docRef = doc(db, "settings", "rewards");
+      try {
+        await updateDoc(docRef, {
+          referBonus: newBonus,
+          minWithdraw: newMinWithdraw,
+          minDeposit: newMinDeposit
+        });
+        document.getElementById("settingsStatus").textContent = "Settings updated successfully.";
+      } catch (error) {
+        console.error("Error updating settings:", error);
+        document.getElementById("settingsStatus").textContent = "Failed to update settings.";
+      }
+    });
+  });
+
+  // Auth check and init
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      loadSettings();
+    } else {
+      document.getElementById("settingsStatus").textContent = "Please log in as admin.";
+    }
+  });
+</script>
 </body>
 </html>
