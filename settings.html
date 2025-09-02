@@ -50,6 +50,27 @@
           <input id="minDepositInput" type="number" min="0" step="0.01"
             class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" value="0" />
         </div>
+
+        <!-- Nagad Number -->
+        <div>
+          <label class="block text-gray-700 font-medium mb-1" for="nagadNumberInput">Nagad Number</label>
+          <input id="nagadNumberInput" type="text"
+            class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" placeholder="e.g. 017XXXXXXXX" />
+        </div>
+
+        <!-- bKash Number -->
+        <div>
+          <label class="block text-gray-700 font-medium mb-1" for="bkashNumberInput">bKash Number</label>
+          <input id="bkashNumberInput" type="text"
+            class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" placeholder="e.g. 018XXXXXXXX" />
+        </div>
+
+        <!-- USDT Address -->
+        <div>
+          <label class="block text-gray-700 font-medium mb-1" for="usdtAddressInput">USDT Address</label>
+          <input id="usdtAddressInput" type="text"
+            class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" placeholder="Enter USDT Wallet Address" />
+        </div>
       </form>
 
       <div class="mt-6">
@@ -100,6 +121,21 @@
       if (depositSnap.exists()) {
         document.getElementById("minDepositInput").value = depositSnap.data().value || 0;
       }
+
+      const nagadSnap = await getDoc(doc(db, "settings", "nagadNumber"));
+      if (nagadSnap.exists()) {
+        document.getElementById("nagadNumberInput").value = nagadSnap.data().value || "";
+      }
+
+      const bkashSnap = await getDoc(doc(db, "settings", "bkashNumber"));
+      if (bkashSnap.exists()) {
+        document.getElementById("bkashNumberInput").value = bkashSnap.data().value || "";
+      }
+
+      const usdtSnap = await getDoc(doc(db, "settings", "usdtAddress"));
+      if (usdtSnap.exists()) {
+        document.getElementById("usdtAddressInput").value = usdtSnap.data().value || "";
+      }
     } catch (error) {
       console.error("Error loading settings:", error);
       document.getElementById("settingsStatus").textContent = "Error loading settings.";
@@ -112,6 +148,9 @@
       const newBonus = parseFloat(document.getElementById("referralBonusInput").value);
       const newMinWithdraw = parseFloat(document.getElementById("minWithdrawInput").value);
       const newMinDeposit = parseFloat(document.getElementById("minDepositInput").value);
+      const nagadNumber = document.getElementById("nagadNumberInput").value.trim();
+      const bkashNumber = document.getElementById("bkashNumberInput").value.trim();
+      const usdtAddress = document.getElementById("usdtAddressInput").value.trim();
 
       if (isNaN(newBonus) || newBonus < 0 || isNaN(newMinWithdraw) || newMinWithdraw < 0 || isNaN(newMinDeposit) || newMinDeposit < 0) {
         alert("Please enter valid non-negative numbers.");
@@ -122,6 +161,9 @@
         await setDoc(doc(db, "settings", "referralBonus"), { value: newBonus });
         await setDoc(doc(db, "settings", "minWithdraw"), { value: newMinWithdraw });
         await setDoc(doc(db, "settings", "minDeposit"), { value: newMinDeposit });
+        await setDoc(doc(db, "settings", "nagadNumber"), { value: nagadNumber });
+        await setDoc(doc(db, "settings", "bkashNumber"), { value: bkashNumber });
+        await setDoc(doc(db, "settings", "usdtAddress"), { value: usdtAddress });
 
         document.getElementById("settingsStatus").textContent = "Settings updated successfully.";
       } catch (error) {
