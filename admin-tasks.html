@@ -18,18 +18,20 @@
           <i class="fas fa-arrow-left text-2xl"></i>
         </p>
         <h1 class="text-xl font-bold text-gray-800">Admin Panel</h1>
-        <div class="flex gap-2">
-          <button onclick="showAddTask()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition">
-            <i class="fas fa-plus"></i> Add Task
-          </button>
-          <button onclick="showAllList()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition">
-            <i class="fas fa-list"></i> All List
-          </button>
-        </div>
       </div>
     </header>
 
     <main class="max-w-4xl mx-auto px-4 py-6">
+      <!-- Buttons moved inside main -->
+      <div class="flex gap-3 mb-6">
+        <button onclick="showAddTask()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition">
+          <i class="fas fa-plus"></i> Add Task
+        </button>
+        <button onclick="showAllList()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition">
+          <i class="fas fa-list"></i> All List
+        </button>
+      </div>
+
       <!-- Task Form Section -->
       <section id="taskFormSection" class="bg-white rounded-xl shadow-md p-6 mb-10 hidden">
         <h2 class="text-xl font-semibold text-gray-800 mb-4">Add / Edit Task</h2>
