@@ -13,17 +13,25 @@
   <body class="bg-gray-100 min-h-screen">
     <!-- Header -->
     <header class="bg-white shadow-md relative">
-      <div class="max-w-7xl mx-auto px-4 py-3 relative flex items-center justify-center">
-        <p onclick="window.location.href='/admin.html'" class="absolute left-4 text-gray-700 cursor-pointer">
+      <div class="max-w-7xl mx-auto px-4 py-3 relative flex items-center justify-between">
+        <p onclick="window.location.href='/admin.html'" class="text-gray-700 cursor-pointer">
           <i class="fas fa-arrow-left text-2xl"></i>
         </p>
         <h1 class="text-xl font-bold text-gray-800">Admin Panel</h1>
+        <div class="flex gap-2">
+          <button onclick="showAddTask()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition">
+            <i class="fas fa-plus"></i> Add Task
+          </button>
+          <button onclick="showAllList()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition">
+            <i class="fas fa-list"></i> All List
+          </button>
+        </div>
       </div>
     </header>
 
     <main class="max-w-4xl mx-auto px-4 py-6">
       <!-- Task Form Section -->
-      <section class="bg-white rounded-xl shadow-md p-6 mb-10">
+      <section id="taskFormSection" class="bg-white rounded-xl shadow-md p-6 mb-10 hidden">
         <h2 class="text-xl font-semibold text-gray-800 mb-4">Add / Edit Task</h2>
         <form id="taskForm" class="space-y-5">
           <input type="hidden" id="taskId" />
@@ -60,7 +68,7 @@
       </section>
 
       <!-- Tasks List Section -->
-      <section>
+      <section id="tasksListSection">
         <h2 class="text-xl font-semibold text-gray-800 mb-4">All Tasks</h2>
         <div id="tasksList" class="space-y-4" role="list" aria-live="polite">
           <p class="text-center text-indigo-500 italic">Loading tasks...</p>
@@ -115,6 +123,19 @@
         });
       }
 
+      // Switch views
+      window.showAddTask = () => {
+        document.getElementById("taskFormSection").classList.remove("hidden");
+        document.getElementById("tasksListSection").classList.add("hidden");
+        taskForm.reset();
+        taskIdInput.value = "";
+      };
+
+      window.showAllList = () => {
+        document.getElementById("taskFormSection").classList.add("hidden");
+        document.getElementById("tasksListSection").classList.remove("hidden");
+      };
+
       onAuthStateChanged(auth, (user) => {
         if (!user) {
           Swal.fire({
@@ -127,6 +148,7 @@
           return;
         }
         loadTasksRealtime();
+        showAllList(); // ✅ ডিফল্টে লিস্ট দেখাবে
       });
 
       function loadTasksRealtime() {
@@ -165,6 +187,7 @@
               taskDescInput.value = task.description || "";
               taskRewardInput.value = task.reward;
               taskViewInput.value = task.view || "";
+              showAddTask();
               window.scrollTo({ top: 0, behavior: "smooth" });
             };
 
@@ -216,6 +239,7 @@
 
           taskForm.reset();
           taskNameInput.focus();
+          showAllList();
         } catch (error) {
           showToast("Error saving task: " + error.message, "error");
         }
