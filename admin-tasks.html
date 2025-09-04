@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Admin Task Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <!-- SweetAlert2 -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
   <body class="bg-gray-100 min-h-screen">
     <!-- Header -->
@@ -59,14 +59,6 @@
         </form>
       </section>
 
-      <!-- Reset Button -->
-      <div class="mb-6 flex justify-end">
-        <button id="resetTasksBtn"
-          class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-medium shadow-md transition">
-          <i class="fas fa-rotate-left mr-2"></i>Reset Tasks
-        </button>
-      </div>
-
       <!-- Tasks List Section -->
       <section>
         <h2 class="text-xl font-semibold text-gray-800 mb-4">All Tasks</h2>
@@ -84,7 +76,6 @@
         doc,
         setDoc,
         deleteDoc,
-        getDocs,
         onSnapshot,
       } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
       import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -111,7 +102,6 @@
       const taskDescInput = document.getElementById("taskDesc");
       const taskRewardInput = document.getElementById("taskReward");
       const taskViewInput = document.getElementById("taskView");
-      const resetTasksBtn = document.getElementById("resetTasksBtn");
 
       function showToast(message, icon = "success") {
         Swal.fire({
@@ -228,46 +218,6 @@
           taskNameInput.focus();
         } catch (error) {
           showToast("Error saving task: " + error.message, "error");
-        }
-      });
-
-      resetTasksBtn.addEventListener("click", async () => {
-        if (!confirm("Are you sure you want to reset all tasks? This will delete all current tasks and add new ones.")) return;
-
-        try {
-          const snapshot = await getDocs(tasksCol);
-          const deletePromises = snapshot.docs.map(docSnap => deleteDoc(docSnap.ref));
-          await Promise.all(deletePromises);
-
-          const newTasks = [
-            {
-              name: "Visit Example Website",
-              description: "Go to https://example.com and take a look.",
-              reward: 5,
-              view: "https://example.com",
-            },
-            {
-              name: "Watch Promo Video",
-              description: "Watch the full video to earn your reward.",
-              reward: 10,
-              view: "https://youtube.com",
-            },
-            {
-              name: "Join Telegram Group",
-              description: "Stay updated by joining our Telegram channel.",
-              reward: 3,
-              view: "https://t.me/example",
-            },
-          ];
-
-          const addPromises = newTasks.map(task =>
-            setDoc(doc(collection(db, "tasks")), task)
-          );
-
-          await Promise.all(addPromises);
-          showToast("Tasks have been reset successfully.");
-        } catch (error) {
-          showToast("Error resetting tasks: " + error.message, "error");
         }
       });
     </script>
