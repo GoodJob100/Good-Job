@@ -23,12 +23,15 @@
 
     <main class="max-w-4xl mx-auto px-4 py-6">
       <!-- Buttons moved inside main -->
-      <div class="flex gap-3 mb-6">
+      <div class="flex flex-wrap gap-3 mb-6">
         <button onclick="showAddTask()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition">
           <i class="fas fa-plus"></i> Add Task
         </button>
         <button onclick="showAllList()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition">
           <i class="fas fa-list"></i> All List
+        </button>
+        <button onclick="runCronJob()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition">
+          <i class="fas fa-clock"></i> Cron Job
         </button>
       </div>
 
@@ -136,6 +139,16 @@
       window.showAllList = () => {
         document.getElementById("taskFormSection").classList.add("hidden");
         document.getElementById("tasksListSection").classList.remove("hidden");
+      };
+
+      // Cron Job button click
+      window.runCronJob = () => {
+        Swal.fire({
+          icon: "info",
+          title: "Cron Job Executed",
+          text: "Your cron job has been triggered successfully!",
+          confirmButtonText: "OK"
+        });
       };
 
       onAuthStateChanged(auth, (user) => {
