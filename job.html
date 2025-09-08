@@ -13,7 +13,6 @@
     .swal2-timer-progress-bar {
       background: #facc15 !important;
     }
-
     .loader {
       width: 48px;
       height: 48px;
@@ -21,14 +20,10 @@
       border: 6px solid rgba(255, 255, 255, 0.15);
       border-top-color: #facc15;
       animation: spin 2s ease-in-out infinite;
-      box-shadow:
-        0 0 8px #facc15,
-        inset 0 0 8px #facc15;
+      box-shadow: 0 0 8px #facc15, inset 0 0 8px #facc15;
     }
     @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -97,7 +92,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -172,9 +167,9 @@
             taskHtml += `
               <div class="mt-3">
                 <label class="block text-xs text-gray-400 mb-1">Upload Screenshot:</label>
-                <input type="file" accept="image/*" class="w-full text-sm text-gray-300 bg-gray-800 border border-gray-700 rounded-lg p-2 cursor-pointer">
+                <input type="file" accept="image/*" class="screenshotInput w-full text-sm text-gray-300 bg-gray-800 border border-gray-700 rounded-lg p-2 cursor-pointer">
               </div>
-              <button class="w-full py-2 rounded-lg text-sm mt-3 text-center font-bold text-white bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600" data-task-id="${task.id}">
+              <button class="submitTaskBtn w-full py-2 rounded-lg text-sm mt-3 text-center font-bold text-white bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600" data-task-id="${task.id}" data-reward="${task.reward}">
                 Submit
               </button>
             `;
@@ -183,6 +178,36 @@
           taskHtml += `</div>`;
           tasksList.innerHTML += taskHtml;
         });
+
+        // Add submit listeners
+        document.querySelectorAll(".submitTaskBtn").forEach(btn => {
+          btn.addEventListener("click", async (e) => {
+            const taskId = e.target.getAttribute("data-task-id");
+            const reward = parseFloat(e.target.getAttribute("data-reward")) || 0;
+            const card = e.target.closest("div");
+            const fileInput = card.querySelector(".screenshotInput");
+
+            if (!fileInput.files.length) {
+              Swal.fire({ icon: "error", title: "Please upload a screenshot!" });
+              return;
+            }
+
+            try {
+              const userRef = doc(db, "users", currentUser.uid);
+              await updateDoc(userRef, {
+                completedTasks: arrayUnion(taskId),
+                balance: increment(reward)
+              });
+
+              Swal.fire({ icon: "success", title: "Task Completed!", timer: 1500, showConfirmButton: false });
+              loadTasks(); // reload to update UI
+            } catch (error) {
+              console.error(error);
+              Swal.fire({ icon: "error", title: "Error completing task" });
+            }
+          });
+        });
+
         hideLoader();
       });
     }
