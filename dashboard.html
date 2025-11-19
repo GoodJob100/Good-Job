@@ -3,23 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Esay Work</title>
+  <title>Esay Job</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
   <style>
     .swal2-timer-progress-bar {
       background: #facc15 !important;
     }
+    
     .glow-yellow {
       box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
     }
+
     .user-icon-glow {
       box-shadow: 0 0 15px 4px rgba(175, 85, 247, 0.8);
     }
+
     .loader {
       width: 48px;
       height: 48px;
@@ -31,89 +33,10 @@
         0 0 8px #facc15,
         inset 0 0 8px #facc15;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Countdown Container */
-    .countdown-wrapper {
-      display: flex;
-      justify-content: space-between;
-      gap: 0.5rem;
-      border: 1px solid #444;
-      border-radius: 8px;
-      padding: 0.5rem;
-      margin-bottom: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .countdown-title {
-      flex-basis: 100%;
-      text-align: center;
-      font-size: 0.85rem;
-      font-weight: bold;
-      color: #fff;
-      margin-bottom: 0.1rem;
-      padding: 0.1rem 0.1rem;
-      border-radius: 8px;
-      border-bottom: 1px solid #333;
-    }
-    .countdown-item {
-      flex: 1;
-      text-align: center;
-      border: 1px solid #464444;
-      border-radius: 10px;
-      padding: 0.1rem 0;
-      transition: transform 0.2s;
-    }
-    .countdown-item:hover { transform: scale(1.05); }
-    .countdown-item span {
-      display: block;
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #fac;
-    }
-    .countdown-item small {
-      display: block;
-      font-size: 0.7rem;
-      color: #f1f1f1;
-      font-weight: 500;
-    }
-
-    /* Sidebar profile image */
-    .sidebar-profile {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
-    .sidebar-profile img {
-      width: 72px;
-      height: 72px;
-      object-fit: cover;
-      border-radius: 9999px;
-      border: 3px solid rgba(255,255,255,0.08);
-    }
-    .sidebar-username {
-      font-weight: 600;
-      color: #f3f4f6;
-      font-size: 0.95rem;
-      text-align: center;
-    }
-    .sidebar-username small {
-      display: block;
-      font-size: 0.72rem;
-      color: #9ca3af;
-      margin-top: 2px;
-    }
-    .joined-date {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      font-size: 0.75rem;
-      color: #9ca3af;
-      margin-top: 3px;
-    }
-    .joined-date i {
-      color: #facc15;
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
     }
   </style>
 </head>
@@ -128,179 +51,226 @@
     </div>
   </div>
 
-  <!-- Sidebar -->
-  <div id="sidebar" class="fixed top-0 left-0 w-64 h-full bg-black shadow-lg transform overflow-auto -translate-x-full transition-transform duration-300 z-50 border-r border-gray-600">
-    <div class="p-3 border-b border-gray-700 flex items-center justify-between">
-      <h2 class="text-lg font-bold text-yellow-400" style="font-family: 'Audiowide', cursive;">Esay Work</h2>
-      <button id="closeSidebar" class="text-gray-300 flex items-center justify-center bg-gray-700 bg-opacity-40 w-7 h-7 rounded-sm">
-        <i class="fa-solid fa-times text-xl"></i>
-      </button>
-    </div>
-
-    <!-- Profile -->
-    <div class="sidebar-profile mt-5 border-b border-gray-600">
-      <img src="OIP.webp" alt="Profile Image" class="user-icon-glow" onerror="this.style.display='none'">
-      <div class="sidebar-username">
-        Tanvir Ahmed
-        <div class="joined-date">
-          <i class="fa-solid fa-calendar-day"></i>
-          <span>Joined: 15 Feb 2025</span>
-        </div>
-      </div>
-      <!-- Membership Badges Centered -->
-      <div class="mt-1 mb-1 flex flex-col items-center gap-2">
-        <div class="inline-flex items-center gap-1 bg-yellow-400 bg-opacity-40 text-yellow-300 text-xs font-medium px-3 py-0.5 rounded-full border border-yellow-400 uppercase">
-          <i class="fas fa-check-circle text-sm"></i> General
-        </div>
-        <div id="accountStatus"></div>
-      </div>
-    </div>
-
-    <nav class="p-4 space-y-3">
-      <a href="dashboard.html" class="flex items-center gap-3 p-2 rounded bg-gray-900">
-        <i class="fa-solid fa-house text-yellow-400"></i> Home
-      </a>
-      <a href="profile.html" class="flex items-center gap-3 p-2 rounded bg-gray-900">
-        <i class="fa-solid fa-user text-purple-400"></i> Profile
-      </a>
-      <a href="job.html" class="flex items-center gap-3 p-2 rounded bg-gray-900">
-        <i class="fa-solid fa-briefcase text-indigo-400"></i> My Job
-      </a>
-      <a href="pro-account.html" class="flex items-center gap-3 p-2 rounded bg-gray-900">
-        <i class="fa-solid fa-star text-yellow-400"></i> Premium
-      </a>
-      <a href="team.html" class="flex items-center gap-3 p-2 rounded bg-gray-900">
-        <i class="fa-solid fa-users text-green-400"></i> My Team
-      </a>
-      <a href="referral.html" class="flex items-center gap-3 p-2 rounded bg-gray-900">
-        <i class="fa-solid fa-user-plus text-green-400"></i> Referral
-      </a>
-      <a href="ranking.html" class="flex items-center gap-3 p-2 rounded bg-gray-900">
-        <i class="fa-solid fa-trophy text-yellow-400"></i> Ranking
-      </a>
-      <a href="transfer.html" class="flex items-center gap-3 p-2 rounded bg-gray-900">
-        <i class="fa-solid fa-exchange-alt text-purple-400"></i> Transfer
-      </a>
-      <a href="logout.html" class="flex items-center gap-3 p-2 rounded bg-gray-900">
-        <i class="fa-solid fa-right-from-bracket text-red-500"></i> Logout
-      </a>
-    </nav>
-  </div>
-
-  <!-- Overlay -->
-  <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"></div>
-
-  <!-- Daily Bonus Claim Button -->
-    <section id="dailyBonusContainer" class="mb-8"></section>
-
   <!-- Header -->
   <header class="bg-black w-full max-w-md shadow-md py-2 px-3 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
     <div class="flex items-center gap-2">
       <div class="bg-yellow-600 bg-opacity-50 border border-yellow-500 text-yellow-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
-        EW
+        EJ
       </div>
-      <h2 class="text-xl font-bold text-center bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Esay Work</h2>
+      <h2 class="text-xl font-bold text-center bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Esay Job</h2>
     </div>
     <div class="flex items-center gap-6 text-2xl text-gray-100">
       <i class="fa-solid fa-headset font-bold text-1xl"></i>
-      <button id="openSidebar"><i class="fa-solid fa-bars text-2xl"></i></button>
+      <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700" onclick="toggleProfile()">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
     </div>
   </header>
 
   <!-- Daily Bonus Claim Button -->
-  <section id="dailyBonusContainer" class="mb-1"></section>
+    <section id="dailyBonusContainer" class="mb-8"></section>
 
-  <!-- Main Content -->
-  <main class="px-3">
-    <!-- Countdown Timer -->
-    <section id="countdownTimer" class="mb-4">
-      <div class="bg-gray-900 countdown-wrapper">
-        <div class="bg-green-900 countdown-title">বর্তমান বয়স | লঞ্চ তারিখ: ১৫ ফেব্রুয়ারি, ২০২৫</div>
-        <div class="countdown-item"><span id="months">0</span><small>মাস</small></div>
-        <div class="countdown-item"><span id="days">0</span><small>দিন</small></div>
-        <div class="countdown-item"><span id="hours">0</span><small>ঘন্টা</small></div>
-        <div class="countdown-item"><span id="minutes">0</span><small>মিনিট</small></div>
-        <div class="countdown-item"><span id="seconds">0</span><small>সেকেন্ড</small></div>
+  <!-- Profile Modal Backdrop -->
+  <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden flex justify-center items-center p-4">
+    <div id="profileContainer" class="w-full max-w-md mx-auto space-y-6">
+      <section class="bg-black rounded-md shadow-6xl text-white flex flex-col items-center gap-4 border border-gray-700 glow-yellow relative">
+        <button onclick="toggleProfile()" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-xl">
+          <i class="fa-solid fa-times"></i>
+        </button>
+        <div class="flex flex-col items-center gap-2 border-b border-gray-700 w-full py-2 mt-2">
+          <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center user-icon-glow">
+            <i class="fas fa-user text-4xl text-white"></i>
+          </div>
+          <div class="text-center">
+            <h2 id="userName" class="text-lg font-semibold">Loading...</h2>
+            <p class="text-sm text-gray-400">Member since: 2025</p>
+          </div>
+          <div><span id="accountStatus">Account</span></div>
+        </div>
+
+        <div class="w-full rounded-lg p-4 space-y-6">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-yellow-400 bg-opacity-30 rounded-full flex items-center justify-center shadow">
+              <i class="fa-solid fa-user text-xl text-yellow-400"></i>
+            </div>
+            <div>
+              <p class="text-sm text-gray-400">Full Name</p>
+              <p id="userNameDisplay" class="text-sm font-medium text-white">Loading...</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-500 bg-opacity-30 rounded-full flex items-center justify-center shadow">
+              <i class="fa-solid fa-phone text-xl text-blue-400"></i>
+            </div>
+            <div>
+              <p class="text-sm text-gray-400">Phone</p>
+              <p id="userPhone" class="text-sm font-medium text-white">Loading...</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-red-400 bg-opacity-30 rounded-full flex items-center justify-center shadow">
+              <i class="fa-solid fa-envelope text-xl text-red-400"></i>
+            </div>
+            <div>
+              <p class="text-sm text-gray-400">Email</p>
+              <p id="userEmail" class="text-sm font-medium text-white">Loading...</p>
+            </div>
+          </div>
+          <div class="flex justify-center">
+            <div class="mt-2 bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-md shadow flex items-center gap-2" onclick="logout()">
+              <i class="fas fa-sign-out-alt"></i>
+              Logout
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  
+   <!-- Main Content -->
+  <main class="px-3 space-y-5">
+    <!-- MAIN BALANCE SECTION-->
+    <div class="bg-black rounded-md p-4 flex items-center justify-between border border-gray-700 glow-yellow">
+      <div class="text-white">
+        <h2 class="text-sm font-semibold">Total Asset</h2>
+        <p id="mainBalance" class="text-xl text-yellow-400 font-bold mt-1 flex items-center">
+          <i class="fa-solid fa-bangladeshi-taka-sign mr-1"></i>0.00
+        </p>
+        <p class="mt-2 text-xs hidden">Pro Earning
+          <span id="totalproEarnings" class="text-yellow-400">
+            <i class="fa-solid fa-bangladeshi-taka-sign mr-1"></i>0.00
+          </span>
+        </p>
       </div>
-      <!-- Notice Marquee -->
-      <div class="bg-yellow-600 text-white font-semibold py-1 mt-4 rounded flex items-center">
-        <i class="fa-solid fa-bullhorn text-lg ml-2 mr-3"></i>
-        <marquee behavior="scroll" direction="left" scrollamount="4" class="flex-1 text-center">
-          🚀 Welcome to Esay Job! ✅ Stay connected for latest updates. 🎉 Join our Telegram Channel & Group to get all announcements first! 📢
-        </marquee>
-      </div>
-    </section>
-    
-    <!-- Wallet Section -->
-    <section class="mb-8">
-      <div class="bg-gray-900 rounded-xl p-4 shadow-md border border-gray-700">
-        <h3 class="text-lg font-bold mb-3 text-white">Your Wallets <span class="text-gray-300 text-sm font-medium">Balances & summary</span></h3>
-        <div class="grid grid-cols-2 gap-3">
-          <div class="bg-indigo-900 rounded-lg p-3 border-l-4 border-indigo-400">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-briefcase text-indigo-400 text-xl"></i>
-              <p class="text-xl font-bold">0.00</p>
-            </div>
-            <span class="text-sm text-gray-200 block mt-1">Jobs Income</span>
-          </div>
-          <div class="bg-green-900 rounded-lg p-3 border-l-4 border-green-400">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-users text-green-400 text-xl"></i>
-              <p class="text-xl font-bold">0.00</p>
-            </div>
-            <span class="text-sm text-gray-200 block mt-1">Referral Income</span>
-          </div>
-          <div class="bg-red-900 rounded-lg p-3 border-l-4 border-red-400">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-cart-shopping text-red-400 text-xl"></i>
-              <p class="text-xl font-bold">0.00</p>
-            </div>
-            <span class="text-sm text-gray-200 block mt-1">Shopping Income</span>
-          </div>
-          <div class="bg-purple-900 rounded-lg p-3 border-l-4 border-purple-400">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-star text-purple-400 text-xl"></i>
-              <p class="text-xl font-bold">0.00</p>
-            </div>
-            <span class="text-sm text-gray-200 block mt-1">Premium Income</span>
-          </div>
-          <div class="bg-blue-900 rounded-lg p-3 border-l-4 border-blue-400">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-arrow-down text-blue-400 text-xl"></i>
-              <p class="text-xl font-bold">0</p>
-            </div>
-            <span class="text-sm text-gray-200 block mt-1">Total Withdraw</span>
-          </div>
-          <div class="bg-yellow-900 rounded-lg p-3 border-l-4 border-yellow-400">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-chart-line text-yellow-400 text-xl"></i>
-              <p class="text-xl font-bold">0</p>
-            </div>
-            <span class="text-sm text-gray-200 block mt-1">Total Income</span>
+      <a href="deposit.html">
+      <button class="bg-yellow-300 text-black text-sm font-semibold px-5 py-1.5 rounded-full shadow-6xl">
+        Finance
+      </button>
+      </a>
+    </div>
+    </div>
+
+    <!-- Banner Carousel -->
+  <div class="w-full mx-auto overflow-hidden mb-4">
+    <div id="carousel" class="whitespace-nowrap transition-transform duration-700 ease-in-out flex">
+      <!-- Slide 1 -->
+      <div class="min-w-full px-4">
+        <div class="bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-300 p-4 rounded-xl shadow-lg flex items-center gap-4 text-black">
+          <i class="fa-solid fa-gift text-2xl"></i>
+          <div class="flex-1">
+            <h3 class="text-md font-bold">Daily Bonus</h3>
+            <p class="text-xs">Claim your reward every 24 hours</p>
           </div>
         </div>
       </div>
-    </section>
-
-    <!-- Support Section -->
-    <div class="bg-gray-900 rounded-lg px-2 py-4 border border-gray-700 glow-yellow space-y-4 mb-10">
-      <div class="flex gap-2">
-        <!-- Channel Box -->
-        <div class="flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 p-2 rounded-xl shadow-lg flex flex-col items-center text-white border border-blue-300">
-          <i class="fa-brands fa-telegram text-5xl mb-3"></i>
-          <h3 class="text-md font-bold mb-1 text-center">Telegram Channel</h3>
-          <p class="text-xs text-white/80 text-center mb-3">Stay updated with the latest announcements</p>
-          <a href="https://t.me/esayjobofficialchannel" target="_blank" class="bg-white text-blue-600 px-4 py-2 text-sm rounded-md font-semibold shadow hover:bg-blue-100">Join Channel</a>
+      <!-- Slide 2 -->
+      <div class="min-w-full px-4">
+        <div class="bg-gradient-to-r from-purple-500 via-pink-500 to-red-400 p-4 rounded-xl shadow-lg flex items-center gap-4 text-white">
+          <i class="fa-solid fa-star text-2xl"></i>
+          <div class="flex-1">
+            <h3 class="text-md font-bold">Pro Benefits</h3>
+            <p class="text-xs">More tasks, more earnings</p>
+          </div>
         </div>
-        <!-- Group Box -->
-        <div class="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 p-2 rounded-xl shadow-lg flex flex-col items-center text-white border border-pink-300">
-          <i class="fa-brands fa-telegram text-5xl mb-3"></i>
-          <h3 class="text-md font-bold mb-1 text-center">Telegram Group</h3>
-          <p class="text-xs text-white/80 text-center mb-3">Chat and connect with our community</p>
-          <a href="https://t.me/esayjobofficialgroup" target="_blank" class="bg-white text-purple-700 px-4 py-2 text-sm rounded-md font-semibold shadow hover:bg-pink-100">Join Group</a>
+      </div>
+      <!-- Slide 3 -->
+      <div class="min-w-full px-4">
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-500 p-4 rounded-xl shadow-lg flex items-center gap-4 text-white">
+          <i class="fa-solid fa-briefcase text-2xl"></i>
+          <div class="flex-1">
+            <h3 class="text-md font-bold">Jobs Available</h3>
+            <p class="text-xs">Finish tasks to earn quickly</p>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 4 -->
+      <div class="min-w-full px-4">
+        <div class="bg-gradient-to-r from-green-500 to-emerald-400 p-4 rounded-xl shadow-lg flex items-center gap-4 text-white">
+          <i class="fa-solid fa-money-bill-wave text-2xl"></i>
+          <div class="flex-1">
+            <h3 class="text-md font-bold">Easy Withdraw</h3>
+            <p class="text-xs">Instant transfer anytime</p>
+          </div>
         </div>
       </div>
     </div>
+  </div>
+
+
+ <div class="bg-black rounded-md p-4 flex items-center justify-between border border-gray-700 glow-yellow grid grid-cols-4 gap-4 mt-10">
+  <a href="invite.html" class="flex flex-col items-center text-xs font-semibold">
+    <div class="w-12 h-12 rounded-full bg-black flex items-center justify-center shadow-6xl border border-gray-800">
+      <i class="fa-solid fa-user-plus text-white text-xl text-yellow-300"></i>
+    </div>
+    <span class="mt-1">Invite</span>
+  </a>
+  <a href="team.html" class="flex flex-col items-center text-xs font-semibold">
+    <div class="w-12 h-12 rounded-full bg-black flex items-center justify-center shadow-6xl border border-gray-800">
+      <i class="fa-solid fa-users text-white text-xl text-green-400"></i>
+    </div>
+    <span class="mt-1">Team</span>
+  </a>
+  <a href="#rewards" class="flex flex-col items-center text-xs font-semibold">
+    <div class="w-12 h-12 rounded-full bg-black flex items-center justify-center shadow-6xl border border-gray-800">
+      <i class="fa-solid fa-gift text-white text-xl text-purple-500"></i>
+    </div>
+    <span class="mt-1">Rewards</span>
+  </a>
+  <a href="#ranking" class="flex flex-col items-center text-xs font-semibold">
+    <div class="w-12 h-12 rounded-full bg-black flex items-center justify-center shadow-6xl border border-gray-800">
+      <i class="fa-solid fa-ranking-star text-white text-xl text-yellow-300"></i>
+    </div>
+    <span class="mt-1">Ranking</span>
+  </a>
+  <a href="transfer.html" class="flex flex-col items-center text-xs font-semibold">
+    <div class="w-12 h-12 rounded-full bg-black flex items-center justify-center shadow-6xl border border-gray-800">
+      <i class="fa-solid fa-arrow-right-arrow-left text-white text-xl text-yellow-300"></i>
+    </div>
+    <span class="mt-1">Transfer</span>
+  </a>
+  <a href="#emailsales" class="flex flex-col items-center text-xs font-semibold">
+    <div class="w-12 h-12 rounded-full bg-black flex items-center justify-center shadow-6xl border border-gray-800">
+      <i class="fa-solid fa-envelope-open-text text-white text-xl text-red-400"></i>
+    </div>
+    <span class="mt-1">Email Sales</span>
+  </a>
+  <a href="#shopping" class="flex flex-col items-center text-xs font-semibold">
+    <div class="w-12 h-12 rounded-full bg-black flex items-center justify-center shadow-6xl border border-gray-800">
+      <i class="fa-solid fa-cart-plus text-white text-xl text-yellow-300"></i>
+    </div>
+    <span class="mt-1">Shoping</span>
+  </a>
+  <a href="#support" class="flex flex-col items-center text-xs font-semibold">
+    <div class="w-12 h-12 rounded-full bg-black flex items-center justify-center shadow-6xl border border-gray-800">
+      <i class="fa-solid fa-headset text-white text-xl text-gray-300"></i>
+    </div>
+    <span class="mt-1">Support</span>
+  </a>
+</div>
+
+    <!-- Support Section -->
+<div class="bg-black rounded-md p-4 border border-gray-700 glow-yellow space-y-4">
+  <!-- Telegram Channel -->
+  <div class="bg-gradient-to-r from-blue-500 to-indigo-500 p-4 rounded-xl shadow-lg flex items-center gap-2 text-white border border-blue-300">
+    <i class="fa-brands fa-telegram text-3xl"></i>
+    <div class="flex-1">
+      <h3 class="text-md font-bold mb-1">Join Telegram Channel</h3>
+      <p class="text-xs text-white/80">Stay updated with the latest announcements</p>
+    </div>
+    <a href="https://t.me/esayjobofficialchannel" target="_blank" class="bg-white text-blue-600 px-3 py-1 text-sm rounded-md font-semibold shadow hover:bg-blue-100">Join</a>
+  </div>
+
+  <!-- Telegram Group -->
+  <div class="bg-gradient-to-r from-purple-600 to-pink-500 p-4 rounded-xl shadow-lg flex items-center gap-4 text-white border border-pink-300">
+    <i class="fa-brands fa-telegram text-3xl"></i>
+    <div class="flex-1">
+      <h3 class="text-md font-bold mb-1">Join Telegram Group</h3>
+      <p class="text-xs text-white/80">Chat and connect with our community</p>
+    </div>
+    <a href="https://t.me/esayjobofficialgroup" target="_blank" class="bg-white text-purple-700 px-3 py-1 text-sm rounded-md font-semibold shadow hover:bg-pink-100">Join</a>
+  </div>
+</div>
   </main>
 
   <!-- Bottom Navigation Bar -->
@@ -319,11 +289,11 @@
     Job
   </a>
 
-  <a href="shop.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+  <a href="pro-account.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
     <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
-      <i class="fa-solid fa-cart-plus text-lg text-gray-300 hover:text-yellow-400"></i>
+      <i class="fa-solid fa-star text-lg text-gray-300 hover:text-yellow-400"></i>
     </div>
-    Shopping
+    Pro
   </a>
 
   <a href="team.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
@@ -340,8 +310,9 @@
     Profile
   </a>
 </nav>
+  
 
-  <!-- Firebase and JS -->
+    <!-- Firebase and JS -->
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -399,42 +370,16 @@
     };
   </script>
 
-  <!-- Sidebar -->
+  <!-- Carousel Script -->
   <script>
-    const sidebar = document.getElementById("sidebar");
-    const overlay = document.getElementById("overlay");
-    const openBtn = document.getElementById("openSidebar");
-    const closeBtn = document.getElementById("closeSidebar");
+    let index = 0;
+    const carousel = document.getElementById('carousel');
+    const totalSlides = carousel.children.length;
 
-    openBtn.addEventListener("click", () => {
-      sidebar.classList.remove("-translate-x-full");
-      overlay.classList.remove("hidden");
-    });
-
-    closeBtn.addEventListener("click", () => {
-      sidebar.classList.add("-translate-x-full");
-      overlay.classList.add("hidden");
-    });
-
-    overlay.addEventListener("click", () => {
-      sidebar.classList.add("-translate-x-full");
-      overlay.classList.add("hidden");
-    });
-
-    function copyToClipboard(id) {
-      const copyText = document.getElementById(id);
-      copyText.select();
-      copyText.setSelectionRange(0, 99999);
-      document.execCommand("copy");
-      Swal.fire({
-        icon: "success",
-        title: "Copied!",
-        text: "Your referral info has been copied.",
-        timer: 1500,
-        showConfirmButton: false
-      });
-    }
+    setInterval(() => {
+      index = (index + 1) % totalSlides;
+      carousel.style.transform = `translateX(-${index * 100}%)`;
+    }, 3000);
   </script>
-
 </body>
 </html>
