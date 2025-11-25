@@ -32,11 +32,6 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-
-    /* Sidebar Animation */
-    #sidebar {
-      transition: transform 0.3s ease;
-    }
   </style>
 </head>
 
@@ -51,53 +46,33 @@
     </div>
   </div>
 
-  <!-- Sidebar -->
-  <div id="sidebar" class="fixed top-0 left-0 w-64 h-full bg-gray-900 border-r border-gray-700 transform -translate-x-full z-50">
-    <div class="p-4 border-b border-gray-700">
-      <h2 class="text-xl font-bold text-yellow-400">Menu</h2>
-    </div>
-
-    <ul class="p-4 space-y-4 text-lg">
-      <li><a href="dashboard.html" class="flex items-center gap-3"><i class="fa-solid fa-house"></i> Dashboard</a></li>
-      <li><a href="job.html" class="flex items-center gap-3"><i class="fa-solid fa-briefcase"></i> Job</a></li>
-      <li><a href="pro-account.html" class="flex items-center gap-3"><i class="fa-solid fa-star"></i> Pro Account</a></li>
-      <li><a href="team.html" class="flex items-center gap-3"><i class="fa-solid fa-users"></i> Team</a></li>
-      <li><a href="profile.html" class="flex items-center gap-3"><i class="fa-solid fa-user"></i> Profile</a></li>
-
-      <li>
-        <button onclick="logout()" class="flex items-center gap-3 text-red-400">
-          <i class="fa-solid fa-right-from-bracket"></i> Logout
-        </button>
-      </li>
-    </ul>
-  </div>
-
-  <!-- Overlay -->
-  <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"></div>
-
-  <!-- Header -->
+  <!-- HEADER -->
   <header class="bg-black w-full max-w-md shadow-md py-2 px-3 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
     <div class="flex items-center gap-2">
+
+      <!-- Sidebar Button -->
+      <div id="ProfileBtn" class="bg-gray-900 w-9 h-9 flex items-center justify-center rounded-sm border border-gray-700">
+        <i class="fa-solid fa-bars text-xl"></i>
+      </div>
+
       <div class="bg-yellow-600 bg-opacity-50 border border-yellow-500 text-yellow-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
         EJ
       </div>
       <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Esay Job</h2>
     </div>
+
     <div class="flex items-center gap-6 text-2xl text-gray-100">
       <i class="fa-solid fa-headset"></i>
-      <div id="ProfileBtn" class="bg-gray-900 w-7 h-8 flex items-center justify-center rounded-sm border border-gray-700">
-        <i class="fa-solid fa-bars"></i>
-      </div>
     </div>
   </header>
 
   <!-- Daily Bonus -->
   <section id="dailyBonusContainer" class="mb-8"></section>
 
-  <!-- Main Content -->
+  <!-- MAIN CONTENT -->
   <main class="px-3 space-y-5">
 
-    <!-- Balance Section -->
+    <!-- Balance -->
     <div class="bg-black rounded-md p-4 flex items-center justify-between border border-gray-700 glow-yellow">
       <div>
         <h2 class="text-sm font-semibold">Total Asset</h2>
@@ -112,6 +87,7 @@
 
     <!-- SUPPORT SECTION -->
     <div class="bg-black rounded-md p-4 border border-gray-700 glow-yellow space-y-4">
+
       <div class="bg-gradient-to-r from-blue-500 to-indigo-500 p-4 rounded-xl flex items-center gap-2 text-white">
         <i class="fa-brands fa-telegram text-3xl"></i>
         <div class="flex-1">
@@ -129,11 +105,12 @@
         </div>
         <a href="https://t.me/esayjobofficialgroup" target="_blank" class="bg-white text-purple-700 px-3 py-1 rounded-md font-semibold">Join</a>
       </div>
+
     </div>
 
   </main>
 
-  <!-- Bottom Nav -->
+  <!-- BOTTOM NAV -->
   <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 text-white h-16 z-10">
 
     <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs">
@@ -173,6 +150,65 @@
 
   </nav>
 
+  <!-- ⭐⭐ SIDEBAR ⭐⭐ -->
+  <div id="sidebar" class="fixed top-0 left-0 w-64 h-full bg-black shadow-lg transform overflow-auto -translate-x-full transition-transform duration-300 z-50 border-r border-gray-600">
+    <div class="p-3 border-b border-gray-700 flex items-center justify-between">
+      <h2 class="text-lg font-bold text-yellow-400" style="font-family: 'Audiowide', cursive;">Esay Work</h2>
+      <button id="closeSidebar" class="text-gray-300 flex items-center justify-center bg-gray-700 bg-opacity-40 w-7 h-7 rounded-sm">
+        <i class="fa-solid fa-times text-xl"></i>
+      </button>
+    </div>
+
+    <div class="sidebar-profile mt-5 border-b border-gray-600 text-center pb-4">
+      <img src="OIP.webp" alt="Profile Image" class="mx-auto user-icon-glow w-20 h-20 rounded-full" onerror="this.style.display='none'">
+      <div class="text-lg font-semibold mt-2">Tanvir Ahmed</div>
+      <div class="text-xs text-gray-400">
+        <i class="fa-solid fa-calendar-day"></i>
+        Joined: 15 Feb 2025
+      </div>
+
+      <div class="mt-2 flex flex-col items-center gap-2">
+        <div class="inline-flex items-center gap-1 bg-yellow-400 bg-opacity-40 text-yellow-300 text-xs px-3 py-0.5 rounded-full border border-yellow-400 uppercase">
+          <i class="fas fa-check-circle text-sm"></i> General
+        </div>
+        <div id="accountStatus"></div>
+      </div>
+    </div>
+
+    <nav class="p-4 space-y-3">
+      <a href="dashboard.html" class="flex items-center gap-3 p-2 rounded bg-gray-900">
+        <i class="fa-solid fa-house text-yellow-400"></i> Home
+      </a>
+      <a href="profile.html" class="flex items-center gap-3 p-2 rounded bg-gray-900">
+        <i class="fa-solid fa-user text-purple-400"></i> Profile
+      </a>
+      <a href="job.html" class="flex items-center gap-3 p-2 rounded bg-gray-900">
+        <i class="fa-solid fa-briefcase text-indigo-400"></i> My Job
+      </a>
+      <a href="pro-account.html" class="flex items-center gap-3 p-2 rounded bg-gray-900">
+        <i class="fa-solid fa-star text-yellow-400"></i> Premium
+      </a>
+      <a href="team.html" class="flex items-center gap-3 p-2 rounded bg-gray-900">
+        <i class="fa-solid fa-users text-green-400"></i> My Team
+      </a>
+      <a href="referral.html" class="flex items-center gap-3 p-2 rounded bg-gray-900">
+        <i class="fa-solid fa-user-plus text-green-400"></i> Referral
+      </a>
+      <a href="ranking.html" class="flex items-center gap-3 p-2 rounded bg-gray-900">
+        <i class="fa-solid fa-trophy text-yellow-400"></i> Ranking
+      </a>
+      <a href="transfer.html" class="flex items-center gap-3 p-2 rounded bg-gray-900">
+        <i class="fa-solid fa-exchange-alt text-purple-400"></i> Transfer
+      </a>
+      <a href="#" onclick="logout()" class="flex items-center gap-3 p-2 rounded bg-gray-900">
+        <i class="fa-solid fa-right-from-bracket text-red-500"></i> Logout
+      </a>
+    </nav>
+  </div>
+
+  <!-- Overlay -->
+  <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"></div>
+
   <!-- Firebase JS -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -194,22 +230,6 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    /* Sidebar Logic */
-    const sidebar = document.getElementById("sidebar");
-    const overlay = document.getElementById("overlay");
-    const ProfileBtn = document.getElementById("ProfileBtn");
-
-    ProfileBtn.addEventListener("click", () => {
-      sidebar.style.transform = "translateX(0)";
-      overlay.classList.remove("hidden");
-    });
-
-    overlay.addEventListener("click", () => {
-      sidebar.style.transform = "translateX(-100%)";
-      overlay.classList.add("hidden");
-    });
-
-    /* User Auth & Balance Load */
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
 
@@ -231,6 +251,29 @@
       await signOut(auth);
       window.location.href = "login.html";
     };
+  </script>
+
+  <!-- Sidebar Script -->
+  <script>
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+    const openBtn = document.getElementById("ProfileBtn");
+    const closeBtn = document.getElementById("closeSidebar");
+
+    openBtn.addEventListener("click", () => {
+      sidebar.classList.remove("-translate-x-full");
+      overlay.classList.remove("hidden");
+    });
+
+    closeBtn.addEventListener("click", () => {
+      sidebar.classList.add("-translate-x-full");
+      overlay.classList.add("hidden");
+    });
+
+    overlay.addEventListener("click", () => {
+      sidebar.classList.add("-translate-x-full");
+      overlay.classList.add("hidden");
+    });
   </script>
 
 </body>
