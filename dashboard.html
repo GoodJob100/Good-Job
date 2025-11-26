@@ -95,25 +95,30 @@
 
     <div class="p-4 space-y-4">
 
-      <a href="dashboard.html" class="flex items-center gap-3 p-2 rounded hover:bg-gray-800">
+      <a href="dashboard.html"
+        class="flex items-center gap-3 p-2 rounded bg-gray-900 border border-gray-700 hover:bg-gray-800">
         <i class="fa-solid fa-house text-yellow-400"></i> Dashboard
       </a>
 
-      <a href="job.html" class="flex items-center gap-3 p-2 rounded hover:bg-gray-800">
+      <a href="job.html"
+        class="flex items-center gap-3 p-2 rounded bg-gray-900 border border-gray-700 hover:bg-gray-800">
         <i class="fa-solid fa-briefcase text-yellow-400"></i> Job
       </a>
 
-      <a href="team.html" class="flex items-center gap-3 p-2 rounded hover:bg-gray-800">
+      <a href="team.html"
+        class="flex items-center gap-3 p-2 rounded bg-gray-900 border border-gray-700 hover:bg-gray-800">
         <i class="fa-solid fa-users text-yellow-400"></i> Team
       </a>
 
-      <a href="profile.html" class="flex items-center gap-3 p-2 rounded hover:bg-gray-800">
+      <a href="profile.html"
+        class="flex items-center gap-3 p-2 rounded bg-gray-900 border border-gray-700 hover:bg-gray-800">
         <i class="fa-solid fa-user text-yellow-400"></i> Profile
       </a>
 
       <button onclick="logout()" class="flex items-center gap-3 p-2 rounded hover:bg-red-600 w-full text-left">
         <i class="fa-solid fa-right-from-bracket text-red-400"></i> Logout
       </button>
+
     </div>
   </div>
 
@@ -263,16 +268,11 @@
         if (data.createdAt) {
           let date;
 
-          // If Timestamp
           if (typeof data.createdAt.toDate === "function") {
             date = data.createdAt.toDate();
-          } 
-          // If string
-          else if (typeof data.createdAt === "string") {
+          } else if (typeof data.createdAt === "string") {
             date = new Date(data.createdAt);
-          }
-          // If number
-          else {
+          } else {
             date = new Date(data.createdAt);
           }
 
@@ -286,7 +286,6 @@
           document.getElementById("joinDate").innerText = `Joined: ${formatted}`;
         }
 
-        // KEEP DAILY BONUS FUNCTION
         renderDailyBonusButton("dailyBonusContainer");
 
         document.getElementById("loadingOverlay").style.display = "none";
@@ -313,4 +312,4 @@
 
 </body>
 
-  </html>
+</html>
