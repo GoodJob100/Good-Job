@@ -81,7 +81,7 @@
 
       <div class="text-gray-300 text-sm mt-1">
         <i class="fa-solid fa-calendar-day"></i>
-        <span id="joinDate">Joined: 15 Feb 2025</span>
+        <span id="joinDate">Joined: --</span>
       </div>
 
       <div class="mt-3 flex flex-col items-center gap-2">
@@ -249,13 +249,42 @@
       if (!user) return window.location.href = "login.html";
 
       const userDoc = await getDoc(doc(db, "users", user.uid));
+
       if (userDoc.exists()) {
         const data = userDoc.data();
 
         document.getElementById("mainBalance").innerText = `৳${data.balance || 0}`;
-
         document.getElementById("sidebarUserName").innerText = data.username || "User";
         document.getElementById("sidebarProfileImg").src = data.photoUrl || "OIP.webp";
+
+        // -------------------------
+        // JOIN DATE (createdAt)
+        // -------------------------
+        if (data.createdAt) {
+          let date;
+
+          // If Timestamp
+          if (typeof data.createdAt.toDate === "function") {
+            date = data.createdAt.toDate();
+          } 
+          // If string
+          else if (typeof data.createdAt === "string") {
+            date = new Date(data.createdAt);
+          }
+          // If number
+          else {
+            date = new Date(data.createdAt);
+          }
+
+          const formatted =
+            date.toLocaleString("en-US", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            });
+
+          document.getElementById("joinDate").innerText = `Joined: ${formatted}`;
+        }
 
         // KEEP DAILY BONUS FUNCTION
         renderDailyBonusButton("dailyBonusContainer");
