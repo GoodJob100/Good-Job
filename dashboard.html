@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Esay Job</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
@@ -60,83 +61,22 @@
     </div>
   </div>
 
-  <!-- Sidebar -->
-  <div id="sidebar"
-    class="fixed top-0 left-0 w-64 h-full bg-black shadow-lg transform overflow-auto -translate-x-full transition-transform duration-300 z-50 border-r border-gray-600">
-
-    <div class="p-3 border-b border-gray-700 flex items-center justify-between">
-      <h2 class="text-lg font-bold text-yellow-400" style="font-family: 'Audiowide', cursive;">Esay Job</h2>
-      <button id="closeSidebar" class="text-gray-300 flex items-center justify-center bg-gray-700 bg-opacity-40 w-7 h-7 rounded-sm border border-gray-700">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-
-    <!-- PROFILE SECTION -->
-    <div class="p-4 mt-2 border-b border-gray-600 text-center">
-
-      <img src="OIP.webp" id="sidebarProfileImg" class="user-icon-glow mb-3"
-        onerror="this.style.display='none'">
-
-      <h3 id="sidebarUserName" class="text-lg font-bold">Tanvir Ahmed</h3>
-
-      <div class="text-gray-300 text-sm mt-1">
-        <i class="fa-solid fa-calendar-day"></i>
-        <span id="joinDate">Joined: --</span>
-      </div>
-
-      <div class="mt-3 flex flex-col items-center gap-2">
-        <div
-          class="inline-flex items-center gap-1 bg-yellow-400 bg-opacity-40 text-yellow-300 text-xs font-medium px-3 py-0.5 rounded-full border border-yellow-400 uppercase">
-          <i class="fas fa-check-circle text-sm"></i> General
-        </div>
-      </div>
-    </div>
-    <!-- END PROFILE SECTION -->
-
-    <div class="p-4 space-y-4">
-
-      <a href="dashboard.html"
-        class="flex items-center gap-3 p-2 rounded bg-gray-900 border border-gray-700 hover:bg-gray-800">
-        <i class="fa-solid fa-house text-yellow-400"></i> Dashboard
-      </a>
-
-      <a href="job.html"
-        class="flex items-center gap-3 p-2 rounded bg-gray-900 border border-gray-700 hover:bg-gray-800">
-        <i class="fa-solid fa-briefcase text-yellow-400"></i> Job
-      </a>
-
-      <a href="team.html"
-        class="flex items-center gap-3 p-2 rounded bg-gray-900 border border-gray-700 hover:bg-gray-800">
-        <i class="fa-solid fa-users text-yellow-400"></i> Team
-      </a>
-
-      <a href="profile.html"
-        class="flex items-center gap-3 p-2 rounded bg-gray-900 border border-gray-700 hover:bg-gray-800">
-        <i class="fa-solid fa-user text-yellow-400"></i> Profile
-      </a>
-
-      <button onclick="logout()" class="flex items-center gap-3 p-2 rounded hover:bg-red-600 w-full text-left">
-        <i class="fa-solid fa-right-from-bracket text-red-400"></i> Logout
-      </button>
-
-    </div>
-  </div>
+  <!-- Sidebar Container (Injected by JS) -->
+  <div id="sidebarContainer"></div>
 
   <!-- Header -->
   <header
     class="bg-black w-full max-w-md shadow-md py-2 px-3 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
     <div class="flex items-center gap-2">
       <div class="bg-yellow-600 bg-opacity-50 border border-yellow-500 text-yellow-300 w-9 h-9 flex items-center justify-center font-bold rounded-full"
-        style="font-family: 'Audiowide', cursive;">
-        EJ
-      </div>
+        style="font-family: 'Audiowide', cursive;">EJ</div>
       <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent"
         style="font-family: 'Audiowide', cursive;">Esay Job</h2>
     </div>
     <div class="flex items-center gap-6 text-2xl text-gray-100">
       <i class="fa-solid fa-headset"></i>
-      <div id="ProfileBtn"
-        class="bg-gray-900 w-5 h-8 flex items-center justify-center rounded-sm border border-gray-700">
+      <div onclick="openSidebar()"
+        class="bg-gray-900 w-5 h-8 flex items-center justify-center rounded-sm border border-gray-700 cursor-pointer">
         <i class="fa-solid fa-ellipsis-vertical"></i>
       </div>
     </div>
@@ -148,7 +88,7 @@
   <!-- Main Content -->
   <main class="px-3 space-y-5">
 
-    <!-- Balance Section -->
+    <!-- Balance -->
     <div class="bg-black rounded-md p-4 flex items-center justify-between border border-gray-700 glow-yellow">
       <div>
         <h2 class="text-sm font-semibold">Total Asset</h2>
@@ -157,33 +97,8 @@
         </p>
       </div>
       <a href="deposit.html">
-        <button class="bg-yellow-300 text-black text-sm font-semibold px-5 py-1.5 rounded-full shadow-6xl">Finance</button>
+        <button class="bg-yellow-300 text-black text-sm font-semibold px-5 py-1.5 rounded-full">Finance</button>
       </a>
-    </div>
-
-    <!-- SUPPORT SECTION -->
-    <div class="bg-black rounded-md p-4 border border-gray-700 glow-yellow space-y-4">
-
-      <div class="bg-gradient-to-r from-blue-500 to-indigo-500 p-4 rounded-xl flex items-center gap-2 text-white">
-        <i class="fa-brands fa-telegram text-3xl"></i>
-        <div class="flex-1">
-          <h3 class="text-md font-bold mb-1">Join Telegram Channel</h3>
-          <p class="text-xs text-white/80">Stay updated with announcements</p>
-        </div>
-        <a href="https://t.me/esayjobofficialchannel" target="_blank"
-          class="bg-white text-blue-600 px-3 py-1 rounded-md font-semibold">Join</a>
-      </div>
-
-      <div class="bg-gradient-to-r from-purple-600 to-pink-500 p-4 rounded-xl flex items-center gap-4 text-white">
-        <i class="fa-brands fa-telegram text-3xl"></i>
-        <div class="flex-1">
-          <h3 class="text-md font-bold mb-1">Join Telegram Group</h3>
-          <p class="text-xs text-white/80">Chat with community</p>
-        </div>
-        <a href="https://t.me/esayjobofficialgroup" target="_blank"
-          class="bg-white text-purple-700 px-3 py-1 rounded-md font-semibold">Join</a>
-      </div>
-
     </div>
 
   </main>
@@ -191,45 +106,24 @@
   <!-- Bottom Nav -->
   <nav
     class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 text-white h-16 z-10">
-
-    <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs">
-      <div class="bg-gray-900 w-9 h-9 rounded-full flex items-center justify-center border border-gray-500">
-        <i class="fa-solid fa-house text-gray-300 text-lg"></i>
-      </div>
-      Home
+    <a href="dashboard.html" class="flex flex-col items-center text-xs">
+      <i class="fa-solid fa-house"></i>Home
     </a>
-
-    <a href="job.html" class="nav-item flex flex-col items-center text-xs">
-      <div class="bg-gray-900 w-9 h-9 rounded-full flex items-center justify-center border border-gray-500">
-        <i class="fa-solid fa-briefcase text-gray-300 text-lg"></i>
-      </div>
-      Job
+    <a href="job.html" class="flex flex-col items-center text-xs">
+      <i class="fa-solid fa-briefcase"></i>Job
     </a>
-
-    <a href="pro-account.html" class="nav-item flex flex-col items-center text-xs">
-      <div class="bg-gray-900 w-9 h-9 rounded-full flex items-center justify-center border border-gray-500">
-        <i class="fa-solid fa-star text-gray-300 text-lg"></i>
-      </div>
-      Pro
+    <a href="pro-account.html" class="flex flex-col items-center text-xs">
+      <i class="fa-solid fa-star"></i>Pro
     </a>
-
-    <a href="team.html" class="nav-item flex flex-col items-center text-xs">
-      <div class="bg-gray-900 w-9 h-9 rounded-full flex items-center justify-center border border-gray-500">
-        <i class="fa-solid fa-users text-gray-300 text-lg"></i>
-      </div>
-      Team
+    <a href="team.html" class="flex flex-col items-center text-xs">
+      <i class="fa-solid fa-users"></i>Team
     </a>
-
-    <a href="profile.html" class="nav-item flex flex-col items-center text-xs">
-      <div class="bg-gray-900 w-9 h-9 rounded-full flex items-center justify-center border border-gray-500">
-        <i class="fa-solid fa-user text-gray-300 text-lg"></i>
-      </div>
-      Profile
+    <a href="profile.html" class="flex flex-col items-center text-xs">
+      <i class="fa-solid fa-user"></i>Profile
     </a>
-
   </nav>
 
-  <!-- Firebase JS + Sidebar JS -->
+  <!-- Firebase + Sidebar JS -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -242,74 +136,64 @@
       projectId: "bdwork-346d3",
       storageBucket: "bdwork-346d3.appspot.com",
       messagingSenderId: "900963179093",
-      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
-      measurementId: "G-FM1YJ8E5GK"
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
+    // 🔥 Sidebar Inject via JS
+    document.getElementById("sidebarContainer").innerHTML = `
+      <div id="sidebar"
+        class="fixed top-0 left-0 w-64 h-full bg-black z-50 -translate-x-full transition-transform duration-300 border-r border-gray-600">
+        <div class="p-3 flex justify-between border-b border-gray-700">
+          <h2 class="text-yellow-400 font-bold">Esay Job</h2>
+          <button onclick="closeSidebar()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="p-4 text-center">
+          <img id="sidebarProfileImg" class="user-icon-glow mb-2">
+          <h3 id="sidebarUserName"></h3>
+          <p id="joinDate" class="text-sm text-gray-400"></p>
+        </div>
+        <div class="p-4 space-y-3">
+          <a href="dashboard.html">Dashboard</a>
+          <a href="job.html">Job</a>
+          <a href="team.html">Team</a>
+          <a href="profile.html">Profile</a>
+          <button onclick="logout()" class="text-red-400">Logout</button>
+        </div>
+      </div>
+    `;
 
-      const userDoc = await getDoc(doc(db, "users", user.uid));
+    window.openSidebar = () => {
+      document.getElementById("sidebar").classList.remove("-translate-x-full");
+    }
 
-      if (userDoc.exists()) {
-        const data = userDoc.data();
+    window.closeSidebar = () => {
+      document.getElementById("sidebar").classList.add("-translate-x-full");
+    }
 
-        document.getElementById("mainBalance").innerText = `৳${data.balance || 0}`;
-        document.getElementById("sidebarUserName").innerText = data.username || "User";
-        document.getElementById("sidebarProfileImg").src = data.photoUrl || "OIP.webp";
-
-        // -------------------------
-        // JOIN DATE (createdAt)
-        // -------------------------
-        if (data.createdAt) {
-          let date;
-
-          if (typeof data.createdAt.toDate === "function") {
-            date = data.createdAt.toDate();
-          } else if (typeof data.createdAt === "string") {
-            date = new Date(data.createdAt);
-          } else {
-            date = new Date(data.createdAt);
-          }
-
-          const formatted =
-            date.toLocaleString("en-US", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            });
-
-          document.getElementById("joinDate").innerText = `Joined: ${formatted}`;
-        }
-
-        renderDailyBonusButton("dailyBonusContainer");
-
-        document.getElementById("loadingOverlay").style.display = "none";
-      }
-    });
-
-    window.logout = async function () {
+    window.logout = async () => {
       await signOut(auth);
-      window.location.href = "login.html";
-    };
+      location.href = "login.html";
+    }
 
-    const sidebar = document.getElementById("sidebar");
-    const ProfileBtn = document.getElementById("ProfileBtn");
-    const closeSidebar = document.getElementById("closeSidebar");
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return location.href = "login.html";
 
-    ProfileBtn.addEventListener("click", () => {
-      sidebar.classList.remove("-translate-x-full");
-    });
-
-    closeSidebar.addEventListener("click", () => {
-      sidebar.classList.add("-translate-x-full");
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (snap.exists()) {
+        const d = snap.data();
+        mainBalance.innerText = `৳${d.balance || 0}`;
+        sidebarUserName.innerText = d.username || "User";
+        sidebarProfileImg.src = d.photoUrl || "OIP.webp";
+        if (d.createdAt) joinDate.innerText = "Joined: " + new Date(d.createdAt.toDate()).toDateString();
+        renderDailyBonusButton("dailyBonusContainer");
+        loadingOverlay.style.display = "none";
+      }
     });
   </script>
 
 </body>
-
 </html>
