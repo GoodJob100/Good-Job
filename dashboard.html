@@ -1,67 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Esay Job</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Esay Job</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <style>
-    .swal2-timer-progress-bar { background: #facc15 !important; }
-    .glow-yellow { box-shadow: 0 0 5px rgba(234,179,8,.5); }
+<style>
+.swal2-timer-progress-bar{background:#facc15!important}
+.glow-yellow{box-shadow:0 0 5px rgba(234,179,8,.5)}
 
-    .user-icon-glow{
-      width:80px;height:80px;border-radius:50%;
-      border:2px solid #a855f7;
-      box-shadow:0 0 15px 4px rgba(175,85,247,.8);
-      object-fit:cover;margin:0 auto;
-    }
+.user-icon-glow{
+width:80px;height:80px;border-radius:50%;
+border:2px solid #a855f7;
+box-shadow:0 0 15px 4px rgba(175,85,247,.8);
+object-fit:cover;margin:auto
+}
 
-    .loader{
-      width:48px;height:48px;border-radius:50%;
-      border:6px solid rgba(255,255,255,.15);
-      border-top-color:#facc15;
-      animation:spin 2s linear infinite;
-    }
-
-    @keyframes spin{to{transform:rotate(360deg)}}
-  </style>
+.loader{
+width:48px;height:48px;border-radius:50%;
+border:6px solid rgba(255,255,255,.15);
+border-top-color:#facc15;
+animation:spin 1s linear infinite;
+box-shadow:0 0 8px #facc15,inset 0 0 8px #facc15
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
 </head>
 
-<body class="bg-black text-white flex flex-col min-h-screen pb-16">
+<body class="bg-black text-white min-h-screen pb-16">
 
-<!-- Loader -->
-<div id="loadingOverlay" class="fixed inset-0 bg-black flex items-center justify-center z-50">
-  <div class="text-center">
-    <div class="loader mx-auto mb-4"></div>
-    <h1 class="text-2xl font-bold animate-pulse bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent"
-      style="font-family:Audiowide">Esay Job</h1>
-    <p class="text-gray-400 text-xs">Loading...</p>
-  </div>
+<!-- ✅ LOADING (FIXED) -->
+<div id="loadingOverlay"
+class="fixed inset-0 bg-black flex items-center justify-center z-[9999]">
+<div class="text-center">
+<div class="loader mx-auto mb-4"></div>
+<h1 class="text-2xl font-bold animate-pulse bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent"
+style="font-family:Audiowide">Esay Job</h1>
+<p class="text-gray-400 text-xs">Loading...</p>
+</div>
 </div>
 
-<!-- Sidebar container (JS inject করবে) -->
+<!-- Sidebar Inject -->
 <div id="sidebarContainer"></div>
 
 <!-- Header -->
-<header class="bg-black max-w-md mx-auto w-full border-b border-gray-600 px-3 py-2 flex justify-between items-center">
-  <div class="flex items-center gap-2">
-    <div class="bg-yellow-600 bg-opacity-50 border border-yellow-500 text-yellow-300 w-9 h-9 flex items-center justify-center font-bold rounded-full"
-      style="font-family:Audiowide">EJ</div>
-    <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent"
-      style="font-family:Audiowide">Esay Job</h2>
-  </div>
+<header class="bg-black max-w-md mx-auto w-full border-b border-gray-700 px-3 py-2 flex justify-between items-center">
+<div class="flex items-center gap-2">
+<div class="bg-yellow-600 bg-opacity-50 border border-yellow-500 text-yellow-300 w-9 h-9 flex items-center justify-center font-bold rounded-full"
+style="font-family:Audiowide">EJ</div>
+<h2 class="text-xl font-bold bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent"
+style="font-family:Audiowide">Esay Job</h2>
+</div>
 
-  <div id="ProfileBtn"
-    class="bg-gray-900 w-6 h-8 flex items-center justify-center rounded-sm border border-gray-700 cursor-pointer">
-    <i class="fa-solid fa-ellipsis-vertical"></i>
-  </div>
+<div id="ProfileBtn"
+class="bg-gray-900 w-6 h-8 flex items-center justify-center rounded-sm border border-gray-700 cursor-pointer">
+<i class="fa-solid fa-ellipsis-vertical"></i>
+</div>
 </header>
 
 <!-- Daily Bonus -->
@@ -70,91 +70,93 @@
 <!-- Main -->
 <main class="px-3 space-y-5">
 
-  <div class="bg-black p-4 border border-gray-700 rounded glow-yellow flex justify-between">
-    <div>
-      <h2 class="text-sm">Total Asset</h2>
-      <p id="mainBalance" class="text-xl text-yellow-400 font-bold">৳0</p>
-    </div>
-    <a href="deposit.html">
-      <button class="bg-yellow-300 text-black px-5 py-1.5 rounded-full">Finance</button>
-    </a>
-  </div>
+<div class="bg-black p-4 border border-gray-700 rounded glow-yellow flex justify-between">
+<div>
+<h2 class="text-sm">Total Asset</h2>
+<p id="mainBalance" class="text-xl text-yellow-400 font-bold">৳0</p>
+</div>
+<a href="deposit.html">
+<button class="bg-yellow-300 text-black px-5 py-1.5 rounded-full">Finance</button>
+</a>
+</div>
 
 </main>
 
 <!-- Bottom Nav -->
 <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around py-2 h-16">
-  <a href="dashboard.html" class="flex flex-col items-center text-xs">
-    <i class="fa-solid fa-house text-lg"></i>Home
-  </a>
-  <a href="job.html" class="flex flex-col items-center text-xs">
-    <i class="fa-solid fa-briefcase text-lg"></i>Job
-  </a>
-  <a href="profile.html" class="flex flex-col items-center text-xs">
-    <i class="fa-solid fa-user text-lg"></i>Profile
-  </a>
+<a href="dashboard.html" class="flex flex-col items-center text-xs">
+<i class="fa-solid fa-house text-lg"></i>Home
+</a>
+<a href="job.html" class="flex flex-col items-center text-xs">
+<i class="fa-solid fa-briefcase text-lg"></i>Job
+</a>
+<a href="profile.html" class="flex flex-col items-center text-xs">
+<i class="fa-solid fa-user text-lg"></i>Profile
+</a>
 </nav>
 
 <!-- Firebase + Sidebar JS -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth,onAuthStateChanged,signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore,doc,getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { renderDailyBonusButton } from "./dailyBonus.js";
 
 const app = initializeApp({
-  apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
-  authDomain: "bdwork-346d3.firebaseapp.com",
-  projectId: "bdwork-346d3",
-  storageBucket: "bdwork-346d3.appspot.com",
-  messagingSenderId: "900963179093",
-  appId: "1:900963179093:web:81e42d67bb31d603cc92dc"
+apiKey:"AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+authDomain:"bdwork-346d3.firebaseapp.com",
+projectId:"bdwork-346d3"
 });
 
-const auth = getAuth(app);
-const db = getFirestore(app);
+const auth=getAuth(app);
+const db=getFirestore(app);
 
-onAuthStateChanged(auth, async (user) => {
-  if (!user) return location.href="login.html";
-  const snap = await getDoc(doc(db,"users",user.uid));
-  if(snap.exists()){
-    const d = snap.data();
-    document.getElementById("mainBalance").innerText = `৳${d.balance||0}`;
-    document.getElementById("sidebarUserName").innerText = d.username || "User";
-    document.getElementById("sidebarProfileImg").src = d.photoUrl || "OIP.webp";
-    renderDailyBonusButton("dailyBonusContainer");
-    document.getElementById("loadingOverlay").style.display="none";
-  }
-});
-
-/* ===== Sidebar Inject ===== */
-const sidebarContainer = document.getElementById("sidebarContainer");
-sidebarContainer.innerHTML = `
+/* Sidebar Inject */
+document.getElementById("sidebarContainer").innerHTML=`
 <div id="sidebar" class="fixed top-0 left-0 w-64 h-full bg-black border-r border-gray-700 transform -translate-x-full transition duration-300 z-50">
-  <div class="p-3 flex justify-between border-b border-gray-700">
-    <h2 class="text-yellow-400 font-bold" style="font-family:Audiowide">Esay Job</h2>
-    <button onclick="closeSidebar()"><i class="fa-solid fa-xmark"></i></button>
-  </div>
-
-  <div class="p-4 text-center border-b border-gray-700">
-    <img id="sidebarProfileImg" class="user-icon-glow mb-2">
-    <h3 id="sidebarUserName" class="font-bold"></h3>
-  </div>
-
-  <div class="p-4 space-y-3">
-    <a href="dashboard.html">Dashboard</a>
-    <a href="job.html">Job</a>
-    <a href="profile.html">Profile</a>
-    <button onclick="logout()" class="text-red-400">Logout</button>
-  </div>
+<div class="p-3 flex justify-between border-b border-gray-700">
+<h2 class="text-yellow-400 font-bold" style="font-family:Audiowide">Esay Job</h2>
+<button onclick="closeSidebar()"><i class="fa-solid fa-xmark"></i></button>
+</div>
+<div class="p-4 text-center border-b border-gray-700">
+<img id="sidebarProfileImg" class="user-icon-glow mb-2">
+<h3 id="sidebarUserName" class="font-bold"></h3>
+</div>
+<div class="p-4 space-y-3">
+<a href="dashboard.html">Dashboard</a>
+<a href="job.html">Job</a>
+<a href="profile.html">Profile</a>
+<button onclick="logout()" class="text-red-400">Logout</button>
+</div>
 </div>
 `;
 
-window.openSidebar = ()=>document.getElementById("sidebar").classList.remove("-translate-x-full");
-window.closeSidebar = ()=>document.getElementById("sidebar").classList.add("-translate-x-full");
-window.logout = async ()=>{await signOut(auth);location.href="login.html"};
+window.openSidebar=()=>sidebar.classList.remove("-translate-x-full");
+window.closeSidebar=()=>sidebar.classList.add("-translate-x-full");
+document.getElementById("ProfileBtn").onclick=openSidebar;
 
-document.getElementById("ProfileBtn").onclick = openSidebar;
+onAuthStateChanged(auth,async(user)=>{
+if(!user) return location.href="login.html";
+
+const snap=await getDoc(doc(db,"users",user.uid));
+if(snap.exists()){
+const d=snap.data();
+mainBalance.innerText=`৳${d.balance||0}`;
+sidebarUserName.innerText=d.username||"User";
+sidebarProfileImg.src=d.photoUrl||"OIP.webp";
+renderDailyBonusButton("dailyBonusContainer");
+
+/* ✅ LOADER HIDE AFTER EVERYTHING */
+setTimeout(()=>{
+document.getElementById("loadingOverlay").style.display="none";
+},300);
+}
+});
+
+window.logout=async()=>{
+await signOut(auth);
+location.href="login.html";
+};
 </script>
 
 </body>
