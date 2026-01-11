@@ -4,14 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Admin Task Management</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
 
   <body class="bg-gray-100 min-h-screen">
+
     <!-- Header -->
     <header class="bg-white shadow-md relative">
       <div class="max-w-7xl mx-auto px-4 py-3 relative flex items-center justify-center">
@@ -23,49 +23,45 @@
     </header>
 
     <main class="max-w-4xl mx-auto px-4 py-6">
+
       <!-- Buttons -->
       <div class="flex flex-wrap gap-3 mb-6">
-        <button onclick="showAddTask()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition">
+        <button onclick="showAddTask()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg">
           <i class="fas fa-plus"></i> Add Task
         </button>
-        <button onclick="showAllList()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition">
+        <button onclick="showAllList()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
           <i class="fas fa-list"></i> All List
         </button>
       </div>
 
-      <!-- Task Form Section -->
+      <!-- Task Form -->
       <section id="taskFormSection" class="bg-white rounded-xl shadow-md p-6 mb-10 hidden">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Add / Edit Task</h2>
+        <h2 class="text-xl font-semibold mb-4">Add / Edit Task</h2>
 
         <form id="taskForm" class="space-y-5">
           <input type="hidden" id="taskId" />
 
           <div>
-            <label class="block font-medium text-gray-700 mb-1">Task Name</label>
-            <input id="taskName" required
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
+            <label class="font-medium">Task Name</label>
+            <input id="taskName" required class="w-full px-4 py-2 border rounded-lg" />
           </div>
 
           <div>
-            <label class="block font-medium text-gray-700 mb-1">Description</label>
-            <textarea id="taskDesc" rows="4"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"></textarea>
+            <label class="font-medium">Description</label>
+            <textarea id="taskDesc" rows="3" class="w-full px-4 py-2 border rounded-lg"></textarea>
           </div>
 
           <div>
-            <label class="block font-medium text-gray-700 mb-1">Reward Amount (৳)</label>
-            <input type="number" id="taskReward" required min="0" step="0.01"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
+            <label class="font-medium">Reward Amount (৳)</label>
+            <input type="number" id="taskReward" required class="w-full px-4 py-2 border rounded-lg" />
           </div>
 
           <div>
-            <label class="block font-medium text-gray-700 mb-1">View Name (URL)</label>
-            <input type="url" id="taskView"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
+            <label class="font-medium">View URL</label>
+            <input type="url" id="taskView" class="w-full px-4 py-2 border rounded-lg" />
           </div>
 
-          <button type="submit"
-            class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg">
+          <button class="bg-indigo-600 text-white px-5 py-2 rounded-lg">
             Save Task
           </button>
         </form>
@@ -73,18 +69,17 @@
 
       <!-- Tasks List -->
       <section id="tasksListSection">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">All Tasks</h2>
+        <h2 class="text-xl font-semibold mb-4">All Tasks</h2>
         <div id="tasksList" class="space-y-4">
-          <p class="text-center text-indigo-500 italic">Loading tasks...</p>
+          <p class="text-center italic">Loading...</p>
         </div>
       </section>
+
     </main>
 
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-      import {
-        getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot
-      } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+      import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
       import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
       const firebaseConfig = {
@@ -101,7 +96,6 @@
       const auth = getAuth(app);
 
       const tasksCol = collection(db, "tasks");
-      const tasksList = document.getElementById("tasksList");
 
       const taskForm = document.getElementById("taskForm");
       const taskIdInput = document.getElementById("taskId");
@@ -110,9 +104,17 @@
       const taskRewardInput = document.getElementById("taskReward");
       const taskViewInput = document.getElementById("taskView");
 
+      const tasksList = document.getElementById("tasksList");
+      const taskFormSection = document.getElementById("taskFormSection");
+      const tasksListSection = document.getElementById("tasksListSection");
+
       const toast = (msg, icon="success") => Swal.fire({
-        toast:true, position:"top-end", showConfirmButton:false, timer:3000, icon, title:msg
+        toast:true, position:"top-end", showConfirmButton:false, timer:2500, icon, title:msg
       });
+
+      function generate4DigitId(){
+        return Math.floor(1000 + Math.random() * 9000).toString();
+      }
 
       window.showAddTask = () => {
         taskForm.reset();
@@ -126,40 +128,32 @@
         tasksListSection.classList.remove("hidden");
       };
 
-      onAuthStateChanged(auth, user => {
-        if(!user){
-          location.href="login.html";
-          return;
-        }
+      onAuthStateChanged(auth, user=>{
+        if(!user) location.href="login.html";
         loadTasks();
-        showAllList();
       });
 
       function loadTasks(){
         onSnapshot(tasksCol, snap=>{
           tasksList.innerHTML="";
           if(snap.empty){
-            tasksList.innerHTML="<p class='text-center italic text-indigo-500'>No tasks found.</p>";
+            tasksList.innerHTML="<p class='text-center italic'>No tasks</p>";
             return;
           }
-
           snap.forEach(d=>{
             const t={id:d.id,...d.data()};
-            const div=document.createElement("div");
-            div.className="p-5 bg-white rounded-xl shadow flex justify-between";
-            div.innerHTML=`
-              <div>
-                <p class="font-semibold text-indigo-700">${t.name}</p>
-                <p class="text-sm text-gray-600">${t.description||""}</p>
-                <p class="mt-1 text-indigo-600">Reward: ৳${t.reward}</p>
-              </div>
-              <div class="flex gap-2">
-                <button class="bg-yellow-400 px-3 py-1 rounded text-white"
-                  onclick='editTask(${JSON.stringify(t)})'>Edit</button>
-                <button class="bg-red-600 px-3 py-1 rounded text-white"
-                  onclick="deleteTask('${t.id}','${t.name}')">Delete</button>
+            tasksList.innerHTML+=`
+              <div class="bg-white p-4 rounded-xl shadow flex justify-between">
+                <div>
+                  <p class="font-semibold">${t.name} <span class="text-xs text-gray-500">(ID: ${t.id})</span></p>
+                  <p class="text-sm">${t.description||""}</p>
+                  <p class="text-indigo-600">৳${t.reward}</p>
+                </div>
+                <div class="flex gap-2">
+                  <button onclick='editTask(${JSON.stringify(t)})' class="bg-yellow-400 px-3 py-1 rounded text-white">Edit</button>
+                  <button onclick="deleteTask('${t.id}','${t.name}')" class="bg-red-600 px-3 py-1 rounded text-white">Delete</button>
+                </div>
               </div>`;
-            tasksList.appendChild(div);
           });
         });
       }
@@ -174,29 +168,32 @@
       };
 
       window.deleteTask = async(id,name)=>{
-        if(confirm(`Delete "${name}"?`)){
+        if(confirm(`Delete ${name}?`)){
           await deleteDoc(doc(db,"tasks",id));
-          toast("Task deleted");
+          toast("Deleted");
         }
       };
 
-      taskForm.onsubmit = async e =>{
+      taskForm.onsubmit = async e=>{
         e.preventDefault();
         const data={
           name:taskNameInput.value.trim(),
           description:taskDescInput.value.trim(),
-          reward:parseFloat(taskRewardInput.value),
+          reward:Number(taskRewardInput.value),
           view:taskViewInput.value.trim()
         };
+
         if(taskIdInput.value){
           await setDoc(doc(db,"tasks",taskIdInput.value),data,{merge:true});
-          toast("Task updated");
+          toast("Updated");
         }else{
-          await setDoc(doc(tasksCol),data);
-          toast("Task added");
+          const newId = generate4DigitId();
+          await setDoc(doc(db,"tasks",newId),data);
+          toast("Task Added (ID: "+newId+")");
         }
         showAllList();
       };
     </script>
+
   </body>
 </html>
