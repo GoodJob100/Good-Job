@@ -50,7 +50,9 @@
 
   <!-- Job Cards -->
   <main id="jobList" class="max-w-md mx-auto p-3 grid grid-cols-2 gap-3">
-    <p class="col-span-2 text-center text-gray-400 italic">Loading jobs...</p>
+    <p id="loadingText" class="col-span-2 text-center italic text-gray-400">
+      Loading...
+    </p>
   </main>
 
   <!-- Bottom Nav -->
@@ -94,10 +96,11 @@
 
   </nav>
 
-  <!-- Firebase Logic -->
+  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
@@ -110,54 +113,58 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app);
 
     const jobList = document.getElementById("jobList");
+    const loadingText = document.getElementById("loadingText");
 
-    onSnapshot(collection(db, "tasks"), snap => {
-      jobList.innerHTML = "";
-
-      if (snap.empty) {
-        jobList.innerHTML = `<p class="col-span-2 text-center italic text-gray-500">No jobs found</p>`;
+    onAuthStateChanged(auth, user => {
+      if (!user) {
+        location.href = "login.html";
         return;
       }
 
-      snap.forEach(docSnap => {
-        const t = docSnap.data();
-        const id = docSnap.id;
+      onSnapshot(collection(db, "tasks"), snap => {
+        jobList.innerHTML = "";
 
-        jobList.innerHTML += `
-        <div class="relative rounded-xl p-3 bg-gradient-to-br from-gray-900 to-black border border-gray-700">
+        if (snap.empty) {
+          jobList.innerHTML =
+            `<p class="col-span-2 text-center italic text-gray-500">No jobs available</p>`;
+          return;
+        }
 
-          <div class="absolute top-2 right-2 text-xs px-2 py-0.5 rounded-xl font-bold
-            bg-gradient-to-r from-gray-800 to-gray-900 border border-gray-700 text-gray-300">
-            #${id}
-          </div>
+        snap.forEach(d => {
+          const t = d.data();
 
-          <div class="flex items-center gap-2 text-xs text-gray-400 mb-2">
-            <i class="fa-solid fa-stopwatch text-gray-300"></i>
-            <span class="text-gray-300">5 Min</span>
-          </div>
+          jobList.innerHTML += `
+          <div class="relative rounded-xl p-3 bg-gradient-to-br from-gray-900 to-black border border-gray-700">
 
-          <div class="text-2xl font-bold text-yellow-400 mb-2">
-            ${t.reward} ৳
-          </div>
+            <div class="absolute top-2 right-2 text-xs px-2 py-0.5 rounded-xl font-bold
+              bg-gradient-to-r from-gray-800 to-gray-900 border border-gray-700 text-gray-300">
+              #${d.id}
+            </div>
 
-          <div class="flex gap-2 items-center text-xs text-gray-400 mb-1">
-            <i class="fa-solid fa-user text-teal-400"></i>
-            <span>Verified Task</span>
-          </div>
+            <div class="flex items-center gap-2 text-xs text-gray-400 mb-2">
+              <i class="fa-solid fa-stopwatch text-gray-300"></i>
+              <span class="text-gray-300">5 Min</span>
+            </div>
 
-          <div class="flex justify-center mt-2">
-            <a href="${t.view || '#'}" target="_blank"
-              class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold
-              bg-gradient-to-r from-green-400 via-lime-300 to-yellow-300
-              text-black shadow-md shadow-lime-500/40">
-              <i class="fa-solid fa-hand-pointer"></i>
-              Tap To Visit
-            </a>
-          </div>
+            <div class="text-2xl font-bold text-yellow-400 mb-2">
+              ${t.reward} ৳
+            </div>
 
-        </div>`;
+            <div class="flex justify-center mt-2">
+              <a href="${t.view || '#'}" target="_blank"
+                class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold
+                bg-gradient-to-r from-green-400 via-lime-300 to-yellow-300
+                text-black shadow-md shadow-lime-500/40">
+                <i class="fa-solid fa-hand-pointer"></i>
+                Tap To Visit
+              </a>
+            </div>
+
+          </div>`;
+        });
       });
     });
   </script>
