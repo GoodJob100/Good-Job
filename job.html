@@ -6,55 +6,95 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Esay Job</title>
 
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+
+  <!-- Sweet Alert -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="bg-black text-white">
 
   <!-- Header -->
-  <header class="bg-black w-full max-w-md mx-auto py-2 px-3 border-b border-gray-600 flex justify-between items-center">
-    <div class="flex items-center gap-2">
-      <div class="bg-yellow-600 bg-opacity-50 border border-yellow-500 text-yellow-300 w-9 h-9 flex items-center justify-center font-bold rounded-full"
-        style="font-family: 'Audiowide', cursive;">EJ</div>
+  <header
+    class="bg-black w-full max-w-md shadow-md py-2 px-3 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
 
-      <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent"
-        style="font-family: 'Audiowide', cursive;">Esay Job</h2>
+    <div class="flex items-center gap-2">
+      <div
+        class="bg-yellow-600 bg-opacity-50 border border-yellow-500 text-yellow-300 w-9 h-9 flex items-center justify-center font-bold rounded-full"
+        style="font-family: 'Audiowide', cursive;">
+        EJ
+      </div>
+
+      <h2
+        class="text-xl font-bold bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent"
+        style="font-family: 'Audiowide', cursive;">
+        Esay Job
+      </h2>
     </div>
 
-    <div class="flex gap-5 text-xl">
+    <div class="flex items-center gap-6 text-2xl text-gray-100">
       <i class="fa-solid fa-headset"></i>
-      <i class="fa-solid fa-ellipsis-vertical"></i>
+      <div class="bg-gray-900 w-5 h-8 flex items-center justify-center rounded-sm border border-gray-700">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
     </div>
   </header>
 
-  <!-- JOB LIST -->
+  <!-- Job Cards -->
   <main id="jobList" class="max-w-md mx-auto p-3 grid grid-cols-2 gap-3">
-    <p class="col-span-2 text-center text-gray-400">Loading jobs...</p>
+    <p class="col-span-2 text-center text-gray-400 italic">Loading jobs...</p>
   </main>
 
   <!-- Bottom Nav -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around py-2 h-16">
-    <a href="dashboard.html" class="text-xs flex flex-col items-center">
-      <i class="fa-solid fa-house"></i>Home
+  <nav
+    class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 text-white h-16 z-10">
+
+    <a href="dashboard.html" class="flex flex-col items-center text-xs">
+      <div class="bg-gray-900 w-9 h-9 rounded-full flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-house text-gray-300 text-lg"></i>
+      </div>
+      Home
     </a>
-    <a href="job.html" class="text-xs flex flex-col items-center">
-      <i class="fa-solid fa-briefcase"></i>Job
+
+    <a href="job.html" class="flex flex-col items-center text-xs">
+      <div class="bg-gray-900 w-9 h-9 rounded-full flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-briefcase text-gray-300 text-lg"></i>
+      </div>
+      Job
     </a>
-    <a href="pro-account.html" class="text-xs flex flex-col items-center">
-      <i class="fa-solid fa-star"></i>Pro
+
+    <a href="pro-account.html" class="flex flex-col items-center text-xs">
+      <div class="bg-gray-900 w-9 h-9 rounded-full flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-star text-gray-300 text-lg"></i>
+      </div>
+      Pro
     </a>
-    <a href="team.html" class="text-xs flex flex-col items-center">
-      <i class="fa-solid fa-users"></i>Team
+
+    <a href="team.html" class="flex flex-col items-center text-xs">
+      <div class="bg-gray-900 w-9 h-9 rounded-full flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-users text-gray-300 text-lg"></i>
+      </div>
+      Team
     </a>
-    <a href="profile.html" class="text-xs flex flex-col items-center">
-      <i class="fa-solid fa-user"></i>Profile
+
+    <a href="profile.html" class="flex flex-col items-center text-xs">
+      <div class="bg-gray-900 w-9 h-9 rounded-full flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-user text-gray-300 text-lg"></i>
+      </div>
+      Profile
     </a>
+
   </nav>
 
-  <!-- Firebase -->
+  <!-- Firebase Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -77,13 +117,13 @@
       jobList.innerHTML = "";
 
       if (snap.empty) {
-        jobList.innerHTML = "<p class='col-span-2 text-center text-gray-500'>No Jobs Available</p>";
+        jobList.innerHTML = `<p class="col-span-2 text-center italic text-gray-500">No jobs found</p>`;
         return;
       }
 
-      snap.forEach(docu => {
-        const t = docu.data();
-        const id = docu.id;
+      snap.forEach(docSnap => {
+        const t = docSnap.data();
+        const id = docSnap.id;
 
         jobList.innerHTML += `
         <div class="relative rounded-xl p-3 bg-gradient-to-br from-gray-900 to-black border border-gray-700">
@@ -94,8 +134,8 @@
           </div>
 
           <div class="flex items-center gap-2 text-xs text-gray-400 mb-2">
-            <i class="fa-solid fa-stopwatch"></i>
-            <span>5 Min</span>
+            <i class="fa-solid fa-stopwatch text-gray-300"></i>
+            <span class="text-gray-300">5 Min</span>
           </div>
 
           <div class="text-2xl font-bold text-yellow-400 mb-2">
@@ -104,14 +144,17 @@
 
           <div class="flex gap-2 items-center text-xs text-gray-400 mb-1">
             <i class="fa-solid fa-user text-teal-400"></i>
-            <span>0 Reviews</span>
+            <span>Verified Task</span>
           </div>
 
           <div class="flex justify-center mt-2">
-            <div class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold
-              bg-gradient-to-r from-green-400 via-lime-300 to-yellow-300 text-black">
-              <i class="fa-solid fa-hand-pointer"></i> Tap To Visit
-            </div>
+            <a href="${t.view || '#'}" target="_blank"
+              class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold
+              bg-gradient-to-r from-green-400 via-lime-300 to-yellow-300
+              text-black shadow-md shadow-lime-500/40">
+              <i class="fa-solid fa-hand-pointer"></i>
+              Tap To Visit
+            </a>
           </div>
 
         </div>`;
