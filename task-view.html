@@ -26,11 +26,15 @@
 
       <p id="taskId" class="text-xs text-gray-400"></p>
 
-      <h2 id="taskName" class="text-xl font-bold text-yellow-400">Loading...</h2>
+      <h2 id="taskName" class="text-xl font-bold text-yellow-400">
+        Loading...
+      </h2>
 
-      <p id="taskDesc" class="text-gray-300 text-sm leading-relaxed">Please wait...</p>
+      <p id="taskDesc" class="text-gray-300 text-sm leading-relaxed">
+        Please wait...
+      </p>
 
-      <!-- GO TO TASK -->
+      <!-- GO TO TASK BUTTON -->
       <a id="goToTaskBtn" href="#"
         class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold
         bg-gradient-to-r from-green-400 via-lime-300 to-yellow-300
@@ -59,6 +63,7 @@
       </div>
 
     </div>
+
   </main>
 
   <!-- Firebase -->
@@ -103,13 +108,16 @@
         return;
       }
 
-      const snap = await getDoc(doc(db, "tasks", taskId));
+      const refTask = doc(db, "tasks", taskId);
+      const snap = await getDoc(refTask);
+
       if (!snap.exists()) {
         Swal.fire("Error", "Task not found", "error");
         return;
       }
 
       const t = snap.data();
+
       taskIdText.innerText = `Task ID: #${taskId}`;
       taskName.innerText = t.name;
       taskDesc.innerText = t.description || "No description provided.";
@@ -117,8 +125,14 @@
       if (t.view) {
         goToTaskBtn.href = t.view;
         goToTaskBtn.target = "_blank";
+      } else {
+        goToTaskBtn.onclick = e => {
+          e.preventDefault();
+          Swal.fire("No Link", "Task link not available", "info");
+        };
       }
 
+      // SUBMIT SCREENSHOT
       submitBtn.onclick = async () => {
         const file = screenshotInput.files[0];
         if (!file) {
@@ -130,13 +144,8 @@
         submitBtn.innerText = "Uploading...";
 
         try {
-          const ext = file.name.split('.').pop();
-          const imgRef = ref(storage, `taskScreenshots/${taskId}/${user.uid}.${ext}`);
-
-          await uploadBytes(imgRef, file, {
-            contentType: file.type
-          });
-
+          const imgRef = ref(storage, `taskScreenshots/${taskId}/${user.uid}.jpg`);
+          await uploadBytes(imgRef, file);
           const url = await getDownloadURL(imgRef);
 
           await setDoc(doc(db, "taskSubmissions", `${taskId}_${user.uid}`), {
@@ -155,7 +164,7 @@
         }
 
         submitBtn.disabled = false;
-        submitBtn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up mr-1"></i> Submit Screenshot`;
+        submitBtn.innerText = "Submit Screenshot";
       };
     });
   </script>
