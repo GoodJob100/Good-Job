@@ -308,6 +308,7 @@
   import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { renderDailyBonusButton } from "./dailyBonus.js";
 
+  /* ================= FIREBASE INIT ================= */
   const firebaseConfig = {
     apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
     authDomain: "bdwork-346d3.firebaseapp.com",
@@ -324,33 +325,41 @@
 
   const updateBanner = document.getElementById("updateBanner");
 
+  // ✅ HARD HIDE BEFORE ANYTHING
+  updateBanner.style.display = "none";
+
   /* ================= MAINTENANCE CHECK ================= */
   async function checkMaintenance() {
     try {
-      const configSnap = await getDoc(doc(db, "appConfig", "version"));
+      const snap = await getDoc(doc(db, "appConfig", "version"));
 
-      if (configSnap.exists()) {
-        const config = configSnap.data();
-
-        if (config.maintenance === true) {
-          updateBanner.style.display = "flex"; // ALWAYS SHOW
-        } else {
-          updateBanner.style.display = "none"; // ALWAYS HIDE
-        }
-      } else {
+      if (!snap.exists()) {
         updateBanner.style.display = "none";
+        return;
       }
-    } catch (err) {
-      console.error("Maintenance check error:", err);
+
+      const { maintenance } = snap.data();
+
+      if (maintenance === true) {
+        updateBanner.style.display = "flex"; // SHOW ALWAYS
+      } else {
+        updateBanner.style.display = "none"; // NEVER SHOW
+      }
+    } catch (e) {
+      console.error("Maintenance check failed:", e);
       updateBanner.style.display = "none";
     }
   }
 
   /* ================= AUTH ================= */
   onAuthStateChanged(auth, async (user) => {
-    if (!user) return window.location.href = "login.html";
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
 
-    await checkMaintenance(); // ✅ MAINTENANCE CHECK FIRST
+    // 🔥 MAINTENANCE FIRST (NO FLICKER)
+    await checkMaintenance();
 
     const userDoc = await getDoc(doc(db, "users", user.uid));
 
@@ -359,10 +368,11 @@
 
       document.getElementById("mainBalance").innerText = `৳${data.balance || 0}`;
       document.getElementById("sidebarUserName").innerText = data.username || "User";
-      document.getElementById("sidebarProfileImg").src = data.photoUrl || "OIP.webp";
+      document.getElementById("sidebarProfileImg").src =
+        data.photoUrl || "OIP.webp";
 
       if (data.createdAt) {
-        let date =
+        const date =
           typeof data.createdAt.toDate === "function"
             ? data.createdAt.toDate()
             : new Date(data.createdAt);
@@ -380,11 +390,13 @@
     }
   });
 
+  /* ================= LOGOUT ================= */
   window.logout = async function () {
     await signOut(auth);
     window.location.href = "index.html";
   };
 
+  /* ================= SIDEBAR ================= */
   const sidebar = document.getElementById("sidebar");
   const ProfileBtn = document.getElementById("ProfileBtn");
   const closeSidebar = document.getElementById("closeSidebar");
@@ -396,7 +408,7 @@
   closeSidebar.addEventListener("click", () => {
     sidebar.classList.add("-translate-x-full");
   });
-  </script>
+      </script>
   
 </body>
 
