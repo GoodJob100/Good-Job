@@ -22,41 +22,45 @@
   <!-- Content -->
   <main class="max-w-md mx-auto p-4 space-y-4">
 
-    <!-- Task Info -->
-    <div class="bg-gradient-to-br from-gray-900 to-black border border-gray-700 rounded-xl p-4">
+    <div class="bg-gradient-to-br from-gray-900 to-black border border-gray-700 rounded-xl p-4 space-y-4">
 
-      <p id="taskId" class="text-xs text-gray-400 mb-2"></p>
+      <p id="taskId" class="text-xs text-gray-400"></p>
 
-      <h2 id="taskName" class="text-xl font-bold text-yellow-400 mb-2">Loading...</h2>
+      <h2 id="taskName" class="text-xl font-bold text-yellow-400">
+        Loading...
+      </h2>
 
-      <p id="taskDesc" class="text-gray-300 text-sm leading-relaxed mb-4">
+      <p id="taskDesc" class="text-gray-300 text-sm leading-relaxed">
         Please wait...
       </p>
 
+      <!-- GO TO TASK BUTTON -->
       <a id="goToTaskBtn" href="#"
         class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold
         bg-gradient-to-r from-green-400 via-lime-300 to-yellow-300
-        text-black shadow-md shadow-lime-500/40 mb-3">
+        text-black shadow-md shadow-lime-500/40">
         <i class="fa-solid fa-arrow-up-right-from-square"></i>
         Go To Task
       </a>
-    </div>
 
-    <!-- Screenshot Submit -->
-    <div class="bg-gradient-to-br from-gray-900 to-black border border-gray-700 rounded-xl p-4 space-y-3">
+      <!-- SCREENSHOT SUBMIT -->
+      <div class="border-t border-gray-700 pt-4 space-y-3">
 
-      <h3 class="font-bold text-sm text-gray-200">
-        <i class="fa-solid fa-camera"></i> Submit Screenshot
-      </h3>
+        <label class="block text-sm font-semibold text-gray-300">
+          Submit Screenshot Proof
+        </label>
 
-      <input type="file" id="screenshotInput" accept="image/*"
-        class="w-full text-sm bg-gray-800 border border-gray-600 rounded-lg p-2">
+        <input id="screenshotInput" type="file" accept="image/*"
+          class="w-full text-sm bg-gray-800 border border-gray-600 rounded-lg p-2">
 
-      <button id="submitBtn"
-        class="w-full px-4 py-2 rounded-lg font-bold text-sm
-        bg-indigo-600 hover:bg-indigo-700 transition">
-        Submit Screenshot
-      </button>
+        <button id="submitBtn"
+          class="w-full py-2 rounded-lg font-bold text-black
+          bg-gradient-to-r from-blue-400 to-cyan-300 shadow-md shadow-cyan-500/40">
+          <i class="fa-solid fa-cloud-arrow-up mr-1"></i>
+          Submit Screenshot
+        </button>
+
+      </div>
 
     </div>
 
@@ -65,12 +69,9 @@
   <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, addDoc, collection, serverTimestamp } 
-      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } 
-      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } 
-      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
@@ -96,28 +97,27 @@
     const screenshotInput = document.getElementById("screenshotInput");
     const submitBtn = document.getElementById("submitBtn");
 
-    let currentUser = null;
-
     onAuthStateChanged(auth, async user => {
       if (!user) {
         location.href = "login.html";
         return;
       }
 
-      currentUser = user;
-
       if (!taskId) {
-        Swal.fire("Error", "Task ID missing", "error");
+        Swal.fire("Invalid Task", "Task ID not found", "error");
         return;
       }
 
-      const snap = await getDoc(doc(db, "tasks", taskId));
+      const refTask = doc(db, "tasks", taskId);
+      const snap = await getDoc(refTask);
+
       if (!snap.exists()) {
         Swal.fire("Error", "Task not found", "error");
         return;
       }
 
       const t = snap.data();
+
       taskIdText.innerText = `Task ID: #${taskId}`;
       taskName.innerText = t.name;
       taskDesc.innerText = t.description || "No description provided.";
@@ -125,45 +125,48 @@
       if (t.view) {
         goToTaskBtn.href = t.view;
         goToTaskBtn.target = "_blank";
+      } else {
+        goToTaskBtn.onclick = e => {
+          e.preventDefault();
+          Swal.fire("No Link", "Task link not available", "info");
+        };
       }
+
+      // SUBMIT SCREENSHOT
+      submitBtn.onclick = async () => {
+        const file = screenshotInput.files[0];
+        if (!file) {
+          Swal.fire("Missing", "Please select a screenshot", "warning");
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Uploading...";
+
+        try {
+          const imgRef = ref(storage, `taskScreenshots/${taskId}/${user.uid}.jpg`);
+          await uploadBytes(imgRef, file);
+          const url = await getDownloadURL(imgRef);
+
+          await setDoc(doc(db, "taskSubmissions", `${taskId}_${user.uid}`), {
+            taskId,
+            userId: user.uid,
+            screenshot: url,
+            status: "pending",
+            createdAt: serverTimestamp()
+          });
+
+          Swal.fire("Success", "Screenshot submitted successfully", "success");
+          screenshotInput.value = "";
+
+        } catch (err) {
+          Swal.fire("Error", err.message, "error");
+        }
+
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Submit Screenshot";
+      };
     });
-
-    submitBtn.onclick = async () => {
-      const file = screenshotInput.files[0];
-      if (!file) {
-        Swal.fire("Required", "Please select a screenshot", "warning");
-        return;
-      }
-
-      submitBtn.disabled = true;
-      submitBtn.innerText = "Uploading...";
-
-      try {
-        const storageRef = ref(
-          storage,
-          `taskScreenshots/${taskId}/${currentUser.uid}_${Date.now()}`
-        );
-
-        await uploadBytes(storageRef, file);
-        const url = await getDownloadURL(storageRef);
-
-        await addDoc(collection(db, "taskSubmissions"), {
-          taskId,
-          userId: currentUser.uid,
-          screenshotUrl: url,
-          status: "pending",
-          createdAt: serverTimestamp()
-        });
-
-        Swal.fire("Success", "Screenshot submitted successfully", "success");
-        screenshotInput.value = "";
-      } catch (err) {
-        Swal.fire("Error", err.message, "error");
-      }
-
-      submitBtn.disabled = false;
-      submitBtn.innerText = "Submit Screenshot";
-    };
   </script>
 
 </body>
