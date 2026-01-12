@@ -309,7 +309,12 @@
     <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import {
+    getFirestore,
+    doc,
+    getDoc,
+    onSnapshot
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { renderDailyBonusButton } from "./dailyBonus.js";
 
   /* ================= FIREBASE INIT ================= */
@@ -329,30 +334,34 @@
 
   const updateBanner = document.getElementById("updateBanner");
 
-  // ✅ HARD HIDE BEFORE ANYTHING
+  // 🔒 HARD HIDE (NO FLASH)
   updateBanner.style.display = "none";
 
-  /* ================= MAINTENANCE CHECK ================= */
-  async function checkMaintenance() {
-    try {
-      const snap = await getDoc(doc(db, "appConfig", "version"));
+  /* ================= REALTIME MAINTENANCE ================= */
+  function listenMaintenance() {
+    const ref = doc(db, "appConfig", "version");
 
-      if (!snap.exists()) {
+    onSnapshot(
+      ref,
+      (snap) => {
+        if (!snap.exists()) {
+          updateBanner.style.display = "none";
+          return;
+        }
+
+        const { maintenance } = snap.data();
+
+        if (maintenance === true) {
+          updateBanner.style.display = "flex"; // SHOW
+        } else {
+          updateBanner.style.display = "none"; // HIDE
+        }
+      },
+      (error) => {
+        console.error("Maintenance realtime error:", error);
         updateBanner.style.display = "none";
-        return;
       }
-
-      const { maintenance } = snap.data();
-
-      if (maintenance === true) {
-        updateBanner.style.display = "flex"; // SHOW ALWAYS
-      } else {
-        updateBanner.style.display = "none"; // NEVER SHOW
-      }
-    } catch (e) {
-      console.error("Maintenance check failed:", e);
-      updateBanner.style.display = "none";
-    }
+    );
   }
 
   /* ================= AUTH ================= */
@@ -362,8 +371,8 @@
       return;
     }
 
-    // 🔥 MAINTENANCE FIRST (NO FLICKER)
-    await checkMaintenance();
+    // ✅ START REALTIME LISTENER (NO RELOAD NEEDED)
+    listenMaintenance();
 
     const userDoc = await getDoc(doc(db, "users", user.uid));
 
@@ -371,7 +380,8 @@
       const data = userDoc.data();
 
       document.getElementById("mainBalance").innerText = `৳${data.balance || 0}`;
-      document.getElementById("sidebarUserName").innerText = data.username || "User";
+      document.getElementById("sidebarUserName").innerText =
+        data.username || "User";
       document.getElementById("sidebarProfileImg").src =
         data.photoUrl || "OIP.webp";
 
@@ -412,7 +422,7 @@
   closeSidebar.addEventListener("click", () => {
     sidebar.classList.add("-translate-x-full");
   });
-      </script>
+    </script>
   
 </body>
 
