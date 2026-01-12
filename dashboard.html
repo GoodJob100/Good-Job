@@ -302,85 +302,111 @@
 
   </nav>
 
-  <!-- Firebase JS + Sidebar JS -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { renderDailyBonusButton } from "./dailyBonus.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { renderDailyBonusButton } from "./dailyBonus.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
-      authDomain: "bdwork-346d3.firebaseapp.com",
-      projectId: "bdwork-346d3",
-      storageBucket: "bdwork-346d3.appspot.com",
-      messagingSenderId: "900963179093",
-      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
-      measurementId: "G-FM1YJ8E5GK"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+    authDomain: "bdwork-346d3.firebaseapp.com",
+    projectId: "bdwork-346d3",
+    storageBucket: "bdwork-346d3.appspot.com",
+    messagingSenderId: "900963179093",
+    appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+    measurementId: "G-FM1YJ8E5GK"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
+  const updateBanner = document.getElementById("updateBanner");
 
-      const userDoc = await getDoc(doc(db, "users", user.uid));
+  // 🔥 CHECK MAINTENANCE MODE
+  async function checkMaintenance() {
+    try {
+      const versionRef = doc(db, "version", "version");
+      const versionSnap = await getDoc(versionRef);
 
-      if (userDoc.exists()) {
-        const data = userDoc.data();
+      if (versionSnap.exists()) {
+        const data = versionSnap.data();
 
-        document.getElementById("mainBalance").innerText = `৳${data.balance || 0}`;
-        document.getElementById("sidebarUserName").innerText = data.username || "User";
-        document.getElementById("sidebarProfileImg").src = data.photoUrl || "OIP.webp";
+        if (data.maintenance === true) {
+          updateBanner.style.display = "flex"; // SHOW
+        } else {
+          updateBanner.style.display = "none"; // HIDE
+        }
+      } else {
+        updateBanner.style.display = "none";
+      }
+    } catch (err) {
+      console.error("Maintenance check failed:", err);
+      updateBanner.style.display = "none";
+    }
+  }
 
-        // -------------------------
-        // JOIN DATE (createdAt)
-        // -------------------------
-        if (data.createdAt) {
-          let date;
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
 
-          if (typeof data.createdAt.toDate === "function") {
-            date = data.createdAt.toDate();
-          } else if (typeof data.createdAt === "string") {
-            date = new Date(data.createdAt);
-          } else {
-            date = new Date(data.createdAt);
-          }
+    // 🔥 Maintenance check
+    await checkMaintenance();
 
-          const formatted =
-            date.toLocaleString("en-US", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            });
+    const userDoc = await getDoc(doc(db, "users", user.uid));
 
-          document.getElementById("joinDate").innerText = `Joined: ${formatted}`;
+    if (userDoc.exists()) {
+      const data = userDoc.data();
+
+      document.getElementById("mainBalance").innerText = `৳${data.balance || 0}`;
+      document.getElementById("sidebarUserName").innerText = data.username || "User";
+      document.getElementById("sidebarProfileImg").src = data.photoUrl || "OIP.webp";
+
+      // JOIN DATE
+      if (data.createdAt) {
+        let date;
+
+        if (typeof data.createdAt.toDate === "function") {
+          date = data.createdAt.toDate();
+        } else {
+          date = new Date(data.createdAt);
         }
 
-        renderDailyBonusButton("dailyBonusContainer");
+        const formatted = date.toLocaleString("en-US", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        });
 
-        document.getElementById("loadingOverlay").style.display = "none";
+        document.getElementById("joinDate").innerText = `Joined: ${formatted}`;
       }
-    });
 
-    window.logout = async function () {
-      await signOut(auth);
-      window.location.href = "index.html";
-    };
+      renderDailyBonusButton("dailyBonusContainer");
 
-    const sidebar = document.getElementById("sidebar");
-    const ProfileBtn = document.getElementById("ProfileBtn");
-    const closeSidebar = document.getElementById("closeSidebar");
+      document.getElementById("loadingOverlay").style.display = "none";
+    }
+  });
 
-    ProfileBtn.addEventListener("click", () => {
-      sidebar.classList.remove("-translate-x-full");
-    });
+  window.logout = async function () {
+    await signOut(auth);
+    window.location.href = "index.html";
+  };
 
-    closeSidebar.addEventListener("click", () => {
-      sidebar.classList.add("-translate-x-full");
-    });
+  // SIDEBAR
+  const sidebar = document.getElementById("sidebar");
+  const ProfileBtn = document.getElementById("ProfileBtn");
+  const closeSidebar = document.getElementById("closeSidebar");
+
+  ProfileBtn.addEventListener("click", () => {
+    sidebar.classList.remove("-translate-x-full");
+  });
+
+  closeSidebar.addEventListener("click", () => {
+    sidebar.classList.add("-translate-x-full");
+  });
   </script>
 
 </body>
