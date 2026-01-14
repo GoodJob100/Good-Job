@@ -80,7 +80,13 @@
 <script type="module">
   /* ================= Firebase ================= */
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+  import {
+    getFirestore,
+    doc,
+    getDoc,
+    setDoc,
+    onSnapshot
+  } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
   const firebaseConfig = {
@@ -103,7 +109,7 @@
 
   const configRef = doc(db, "appConfig", "version");
 
-  /* ================= Load Data ================= */
+  /* ================= Load Data (Initial) ================= */
   async function loadConfig() {
     const snap = await getDoc(configRef);
     if (snap.exists()) {
@@ -111,6 +117,17 @@
       versionInput.value = data.versionName || "";
       maintenanceToggle.checked = data.maintenance || false;
     }
+  }
+
+  /* ================= REAL-TIME Version Control ================= */
+  function listenVersionChanges() {
+    onSnapshot(configRef, (snap) => {
+      if (snap.exists()) {
+        const data = snap.data();
+        versionInput.value = data.versionName || "";
+        maintenanceToggle.checked = data.maintenance || false;
+      }
+    });
   }
 
   /* ================= Save Data ================= */
@@ -135,7 +152,8 @@
   /* ================= Auth Check ================= */
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      loadConfig();
+      loadConfig();          // initial load
+      listenVersionChanges(); // real-time listener
     } else {
       window.location.href = "/login.html";
     }
@@ -143,4 +161,4 @@
 </script>
 
 </body>
-  </html>
+</html>
