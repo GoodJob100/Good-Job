@@ -22,12 +22,10 @@
   <header class="bg-white shadow-md relative">
     <div class="max-w-7xl mx-auto px-4 py-3 relative flex items-center justify-center">
 
-      <!-- Back Icon -->
       <p onclick="window.location.href='/admin.html'" class="absolute left-4 text-gray-700 cursor-pointer">
         <i class="fas fa-arrow-left text-2xl"></i>
       </p>
 
-      <!-- Title -->
       <h1 class="text-xl font-bold text-gray-800">Admin Panel</h1>
     </div>
   </header>
@@ -61,17 +59,40 @@
 
         <label class="relative inline-flex items-center cursor-pointer">
           <input type="checkbox" id="maintenanceToggle" class="sr-only peer">
-          <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:bg-green-500 transition"></div>
+          <div class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition"></div>
           <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5"></div>
         </label>
       </div>
 
-      <!-- Save Button -->
+      <!-- Save Settings Button -->
       <button
         id="saveBtn"
         class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold"
       >
         Save Settings
+      </button>
+
+      <hr>
+
+      <!-- Current Version -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Current Live Version
+        </label>
+        <input
+          type="text"
+          id="currentVersionInput"
+          placeholder="e.g. v1.0.5"
+          class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+      </div>
+
+      <!-- Save Current Version Button -->
+      <button
+        id="saveCurrentVersionBtn"
+        class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold"
+      >
+        Save Current Version
       </button>
 
     </div>
@@ -95,21 +116,26 @@
     projectId: "bdwork-346d3",
     storageBucket: "bdwork-346d3.appspot.com",
     messagingSenderId: "900963179093",
-    appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
-    measurementId: "G-FM1YJ8E5GK"
+    appId: "1:900963179093:web:81e42d67bb31d603cc92dc"
   };
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const auth = getAuth(app);
 
+  /* ================= Elements ================= */
   const versionInput = document.getElementById("versionName");
   const maintenanceToggle = document.getElementById("maintenanceToggle");
   const saveBtn = document.getElementById("saveBtn");
 
-  const configRef = doc(db, "appConfig", "version");
+  const currentVersionInput = document.getElementById("currentVersionInput");
+  const saveCurrentVersionBtn = document.getElementById("saveCurrentVersionBtn");
 
-  /* ================= Load Data (Initial) ================= */
+  /* ================= Firestore Refs ================= */
+  const configRef = doc(db, "appConfig", "version");
+  const currentVersionRef = doc(db, "appConfig", "currentVersion");
+
+  /* ================= Load Initial Data ================= */
   async function loadConfig() {
     const snap = await getDoc(configRef);
     if (snap.exists()) {
@@ -117,20 +143,31 @@
       versionInput.value = data.versionName || "";
       maintenanceToggle.checked = data.maintenance || false;
     }
+
+    const currentSnap = await getDoc(currentVersionRef);
+    if (currentSnap.exists()) {
+      currentVersionInput.value = currentSnap.data().currentVersion || "";
+    }
   }
 
-  /* ================= REAL-TIME Version Control ================= */
-  function listenVersionChanges() {
+  /* ================= Real-time Listener ================= */
+  function listenRealtime() {
     onSnapshot(configRef, (snap) => {
       if (snap.exists()) {
-        const data = snap.data();
-        versionInput.value = data.versionName || "";
-        maintenanceToggle.checked = data.maintenance || false;
+        const d = snap.data();
+        versionInput.value = d.versionName || "";
+        maintenanceToggle.checked = d.maintenance || false;
+      }
+    });
+
+    onSnapshot(currentVersionRef, (snap) => {
+      if (snap.exists()) {
+        currentVersionInput.value = snap.data().currentVersion || "";
       }
     });
   }
 
-  /* ================= Save Data ================= */
+  /* ================= Save Settings ================= */
   saveBtn.addEventListener("click", async () => {
     const versionName = versionInput.value.trim();
     const maintenance = maintenanceToggle.checked;
@@ -149,11 +186,28 @@
     Swal.fire("Success", "Settings updated successfully", "success");
   });
 
-  /* ================= Auth Check ================= */
+  /* ================= Save Current Version ================= */
+  saveCurrentVersionBtn.addEventListener("click", async () => {
+    const currentVersion = currentVersionInput.value.trim();
+
+    if (!currentVersion) {
+      Swal.fire("Error", "Current version required", "error");
+      return;
+    }
+
+    await setDoc(currentVersionRef, {
+      currentVersion,
+      updatedAt: new Date()
+    });
+
+    Swal.fire("Success", "Current version saved", "success");
+  });
+
+  /* ================= Auth ================= */
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      loadConfig();          // initial load
-      listenVersionChanges(); // real-time listener
+      loadConfig();
+      listenRealtime();
     } else {
       window.location.href = "/login.html";
     }
