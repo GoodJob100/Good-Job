@@ -132,18 +132,34 @@
   const saveOldVersionBtn = document.getElementById("saveOldVersionBtn");
 
   /* ================= Firestore Refs ================= */
+  // Current Version doc
   const configRef = doc(db, "appConfig", "currentVersion");
+
+  // Maintenance আলাদা doc
+  const maintenanceRef = doc(db, "appConfig", "maintenanceMode");
+
+  // Old Version doc
   const oldVersionRef = doc(db, "appConfig", "oldVersion");
 
   /* ================= Load Initial Data ================= */
   async function loadConfig() {
+    // Current Version load
     const snap = await getDoc(configRef);
     if (snap.exists()) {
       const data = snap.data();
       currentVersionInput.value = data.currentVersion || "";
-      maintenanceToggle.checked = data.maintenance || false;
     }
 
+    // Maintenance load (separate)
+    const maintSnap = await getDoc(maintenanceRef);
+    if (maintSnap.exists()) {
+      const mdata = maintSnap.data();
+      maintenanceToggle.checked = mdata.maintenance === true; // true হলে ON
+    } else {
+      maintenanceToggle.checked = false;
+    }
+
+    // Old Version load
     const oldSnap = await getDoc(oldVersionRef);
     if (oldSnap.exists()) {
       oldVersionInput.value = oldSnap.data().oldVersion || "";
@@ -152,14 +168,23 @@
 
   /* ================= Real-time Listener ================= */
   function listenRealtime() {
+    // Current Version realtime
     onSnapshot(configRef, (snap) => {
       if (snap.exists()) {
         const d = snap.data();
         currentVersionInput.value = d.currentVersion || "";
-        maintenanceToggle.checked = d.maintenance || false;
       }
     });
 
+    // Maintenance realtime (separate)
+    onSnapshot(maintenanceRef, (snap) => {
+      if (snap.exists()) {
+        const d = snap.data();
+        maintenanceToggle.checked = d.maintenance === true;
+      }
+    });
+
+    // Old Version realtime
     onSnapshot(oldVersionRef, (snap) => {
       if (snap.exists()) {
         oldVersionInput.value = snap.data().oldVersion || "";
@@ -167,10 +192,32 @@
     });
   }
 
-  /* ================= Save Settings ================= */
+  /* ================= Auto Save Maintenance Toggle ================= */
+  maintenanceToggle.addEventListener("change", async () => {
+    const maintenance = maintenanceToggle.checked; // ON=true, OFF=false
+
+    try {
+      await setDoc(maintenanceRef, {
+        maintenance,
+        updatedAt: new Date()
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Updated!",
+        text: `Maintenance Mode is now ${maintenance ? "ON" : "OFF"}`,
+        timer: 1200,
+        showConfirmButton: false
+      });
+    } catch (err) {
+      Swal.fire("Error", "Failed to update maintenance mode", "error");
+      console.error(err);
+    }
+  });
+
+  /* ================= Save Settings (Only Current Version) ================= */
   saveBtn.addEventListener("click", async () => {
     const currentVersion = currentVersionInput.value.trim();
-    const maintenance = maintenanceToggle.checked;
 
     if (!currentVersion) {
       Swal.fire("Error", "Current version required", "error");
@@ -179,11 +226,10 @@
 
     await setDoc(configRef, {
       currentVersion,
-      maintenance,
       updatedAt: new Date()
     });
 
-    Swal.fire("Success", "Settings updated successfully", "success");
+    Swal.fire("Success", "Current version updated successfully", "success");
   });
 
   /* ================= Save Old Version ================= */
