@@ -237,24 +237,7 @@
         Go To Task
       </a>
 
-      <!-- PHOTO URL SUBMIT -->
-      <div class="border-t border-gray-700 pt-4 space-y-3">
-
-        <label class="block text-sm font-semibold text-gray-300">
-          Submit Proof (Photo URL)
-        </label>
-
-        <input id="photoUrlInput" type="url" placeholder="https://example.com/image.jpg"
-          class="w-full text-sm bg-gray-800 border border-gray-600 rounded-lg p-2 text-white">
-
-        <button id="submitBtn"
-          class="w-full py-2 rounded-lg font-bold text-black
-          bg-gradient-to-r from-blue-400 to-cyan-300 shadow-md shadow-cyan-500/40">
-          <i class="fa-solid fa-paper-plane mr-1"></i>
-          Submit URL
-        </button>
-
-      </div>
+      <!-- SUBMIT SECTION REMOVED -->
 
     </div>
 
@@ -263,7 +246,7 @@
   <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -286,8 +269,6 @@
     const taskDesc = document.getElementById("taskDesc");
     const taskIdText = document.getElementById("taskId");
     const goToTaskBtn = document.getElementById("goToTaskBtn");
-    const photoUrlInput = document.getElementById("photoUrlInput");
-    const submitBtn = document.getElementById("submitBtn");
 
     onAuthStateChanged(auth, async user => {
       if (!user) {
@@ -323,38 +304,6 @@
           Swal.fire("No Link", "Task link not available", "info");
         };
       }
-
-      // SUBMIT PHOTO URL
-      submitBtn.onclick = async () => {
-        const url = photoUrlInput.value.trim();
-
-        if (!url.startsWith("http")) {
-          Swal.fire("Invalid URL", "Please enter a valid photo URL", "warning");
-          return;
-        }
-
-        submitBtn.disabled = true;
-        submitBtn.innerText = "Submitting...";
-
-        try {
-          await setDoc(doc(db, "taskSubmissions", `${taskId}_${user.uid}`), {
-            taskId,
-            userId: user.uid,
-            photoUrl: url,
-            status: "pending",
-            createdAt: serverTimestamp()
-          });
-
-          Swal.fire("Success", "Photo URL submitted successfully", "success");
-          photoUrlInput.value = "";
-
-        } catch (err) {
-          Swal.fire("Error", err.message, "error");
-        }
-
-        submitBtn.disabled = false;
-        submitBtn.innerText = "Submit URL";
-      };
     });
   </script>
 
