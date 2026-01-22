@@ -32,6 +32,14 @@
       }
     }
 
+    /* Robot box wrapper */
+    .robot-premium {
+      position: relative;
+      overflow: hidden;
+      animation: floatY 2.6s ease-in-out infinite, glowPulse 2.2s ease-in-out infinite;
+      border-radius: 14px;
+    }
+
     /* Shimmer effect */
     @keyframes shimmer {
       0% {
@@ -52,6 +60,7 @@
 
     
 
+    
     /* Shimmer line overlay */
     .robot-premium::after {
       content: "";
