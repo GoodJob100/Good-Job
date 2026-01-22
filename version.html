@@ -38,14 +38,14 @@
         App Version Control
       </h2>
 
-      <!-- Version Name -->
+      <!-- Current Version -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">
-          Version Name
+          Current Version
         </label>
         <input
           type="text"
-          id="versionName"
+          id="currentVersion"
           placeholder="e.g. v1.0.5"
           class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
@@ -74,25 +74,25 @@
 
       <hr>
 
-      <!-- Current Version -->
+      <!-- Old Version -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">
-          Current Live Version
+          Old Version
         </label>
         <input
           type="text"
-          id="currentVersionInput"
+          id="oldVersion"
           placeholder="e.g. v1.0.5"
           class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
         />
       </div>
 
-      <!-- Save Current Version Button -->
+      <!-- Save Old Version Button -->
       <button
-        id="saveCurrentVersionBtn"
+        id="saveOldVersionBtn"
         class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold"
       >
-        Save Current Version
+        Save Old Version
       </button>
 
     </div>
@@ -124,29 +124,29 @@
   const auth = getAuth(app);
 
   /* ================= Elements ================= */
-  const versionInput = document.getElementById("versionName");
+  const currentVersionInput = document.getElementById("currentVersion");
   const maintenanceToggle = document.getElementById("maintenanceToggle");
   const saveBtn = document.getElementById("saveBtn");
 
-  const currentVersionInput = document.getElementById("currentVersionInput");
-  const saveCurrentVersionBtn = document.getElementById("saveCurrentVersionBtn");
+  const oldVersionInput = document.getElementById("oldVersion");
+  const saveOldVersionBtn = document.getElementById("saveOldVersionBtn");
 
   /* ================= Firestore Refs ================= */
-  const configRef = doc(db, "appConfig", "version");
-  const currentVersionRef = doc(db, "appConfig", "currentVersion");
+  const configRef = doc(db, "appConfig", "currentVersion");
+  const oldVersionRef = doc(db, "appConfig", "oldVersion");
 
   /* ================= Load Initial Data ================= */
   async function loadConfig() {
     const snap = await getDoc(configRef);
     if (snap.exists()) {
       const data = snap.data();
-      versionInput.value = data.versionName || "";
+      currentVersionInput.value = data.currentVersion || "";
       maintenanceToggle.checked = data.maintenance || false;
     }
 
-    const currentSnap = await getDoc(currentVersionRef);
-    if (currentSnap.exists()) {
-      currentVersionInput.value = currentSnap.data().currentVersion || "";
+    const oldSnap = await getDoc(oldVersionRef);
+    if (oldSnap.exists()) {
+      oldVersionInput.value = oldSnap.data().oldVersion || "";
     }
   }
 
@@ -155,30 +155,30 @@
     onSnapshot(configRef, (snap) => {
       if (snap.exists()) {
         const d = snap.data();
-        versionInput.value = d.versionName || "";
+        currentVersionInput.value = d.currentVersion || "";
         maintenanceToggle.checked = d.maintenance || false;
       }
     });
 
-    onSnapshot(currentVersionRef, (snap) => {
+    onSnapshot(oldVersionRef, (snap) => {
       if (snap.exists()) {
-        currentVersionInput.value = snap.data().currentVersion || "";
+        oldVersionInput.value = snap.data().oldVersion || "";
       }
     });
   }
 
   /* ================= Save Settings ================= */
   saveBtn.addEventListener("click", async () => {
-    const versionName = versionInput.value.trim();
+    const currentVersion = currentVersionInput.value.trim();
     const maintenance = maintenanceToggle.checked;
 
-    if (!versionName) {
-      Swal.fire("Error", "Version name required", "error");
+    if (!currentVersion) {
+      Swal.fire("Error", "Current version required", "error");
       return;
     }
 
     await setDoc(configRef, {
-      versionName,
+      currentVersion,
       maintenance,
       updatedAt: new Date()
     });
@@ -186,21 +186,21 @@
     Swal.fire("Success", "Settings updated successfully", "success");
   });
 
-  /* ================= Save Current Version ================= */
-  saveCurrentVersionBtn.addEventListener("click", async () => {
-    const currentVersion = currentVersionInput.value.trim();
+  /* ================= Save Old Version ================= */
+  saveOldVersionBtn.addEventListener("click", async () => {
+    const oldVersion = oldVersionInput.value.trim();
 
-    if (!currentVersion) {
-      Swal.fire("Error", "Current version required", "error");
+    if (!oldVersion) {
+      Swal.fire("Error", "Old version required", "error");
       return;
     }
 
-    await setDoc(currentVersionRef, {
-      currentVersion,
+    await setDoc(oldVersionRef, {
+      oldVersion,
       updatedAt: new Date()
     });
 
-    Swal.fire("Success", "Current version saved", "success");
+    Swal.fire("Success", "Old version saved", "success");
   });
 
   /* ================= Auth ================= */
