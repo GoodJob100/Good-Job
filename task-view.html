@@ -14,40 +14,22 @@
   <style>
     /* Smooth floating */
     @keyframes floatY {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-4px);
-      }
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
     }
 
     /* Glow pulse */
     @keyframes glowPulse {
-      0%, 100% {
-        box-shadow: 0 0 0 rgba(34, 211, 238, 0.0);
-      }
-      50% {
-        box-shadow: 0 0 20px rgba(34, 211, 238, 0.35);
-      }
+      0%, 100% { box-shadow: 0 0 0 rgba(34, 211, 238, 0.0); }
+      50% { box-shadow: 0 0 20px rgba(34, 211, 238, 0.35); }
     }
 
     /* Shimmer effect */
     @keyframes shimmer {
-      0% {
-        transform: translateX(-120%);
-        opacity: 0;
-      }
-      20% {
-        opacity: 0.7;
-      }
-      50% {
-        opacity: 0.9;
-      }
-      100% {
-        transform: translateX(120%);
-        opacity: 0;
-      }
+      0% { transform: translateX(-120%); opacity: 0; }
+      20% { opacity: 0.7; }
+      50% { opacity: 0.9; }
+      100% { transform: translateX(120%); opacity: 0; }
     }
 
     /* Robot box wrapper */
@@ -66,12 +48,7 @@
       left: 0;
       width: 60%;
       height: 100%;
-      background: linear-gradient(90deg,
-          transparent,
-          rgba(34, 211, 238, 0.18),
-          rgba(255, 255, 255, 0.10),
-          rgba(34, 211, 238, 0.18),
-          transparent);
+      background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.18), rgba(255,255,255,0.10), rgba(34,211,238,0.18), transparent);
       transform: translateX(-120%);
       animation: shimmer 2.4s ease-in-out infinite;
       pointer-events: none;
@@ -79,14 +56,8 @@
 
     /* Robot icon pulse */
     @keyframes iconPulse {
-      0%, 100% {
-        transform: scale(1);
-        filter: drop-shadow(0 0 0 rgba(34, 211, 238, 0));
-      }
-      50% {
-        transform: scale(1.08);
-        filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.55));
-      }
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(34, 211, 238, 0)); }
+      50% { transform: scale(1.08); filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.55)); }
     }
 
     .robot-icon-animate {
@@ -95,14 +66,8 @@
 
     /* Tiny blinking dot */
     @keyframes blinkDot {
-      0%, 100% {
-        opacity: 0.25;
-        transform: scale(1);
-      }
-      50% {
-        opacity: 1;
-        transform: scale(1.3);
-      }
+      0%, 100% { opacity: 0.25; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.3); }
     }
 
     .tracking-dot {
@@ -119,23 +84,8 @@
     }
 
     /* SCANNING TEXT ANIMATION */
-    @keyframes scanGlow {
-      0%, 100% {
-        opacity: 0.6;
-      }
-      50% {
-        opacity: 1;
-      }
-    }
-
-    @keyframes typing {
-      0% {
-        width: 0;
-      }
-      100% {
-        width: 100%;
-      }
-    }
+    @keyframes scanGlow { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+    @keyframes typing { 0% { width: 0; } 100% { width: 100%; } }
 
     .scan-text {
       display: inline-block;
@@ -148,11 +98,8 @@
       letter-spacing: 0.3px;
     }
 
-    .scan-live {
-      animation: scanGlow 1.1s ease-in-out infinite;
-    }
+    .scan-live { animation: scanGlow 1.1s ease-in-out infinite; }
 
-    /* Changing dots after scanning */
     @keyframes dotWave {
       0% { content: ""; }
       25% { content: "."; }
@@ -161,11 +108,7 @@
       100% { content: ""; }
     }
 
-    .scan-dots::after {
-      content: "";
-      animation: dotWave 1.2s infinite;
-      margin-left: 2px;
-    }
+    .scan-dots::after { content: ""; animation: dotWave 1.2s infinite; margin-left: 2px; }
   </style>
 </head>
 
@@ -182,10 +125,8 @@
 
     <div class="bg-gradient-to-br from-gray-900 to-black border border-gray-700 rounded-xl p-4 space-y-4">
 
-      <!-- ROBOT TRACKING (SMALL SIZE UPDATED) -->
-      <div
-        class="robot-premium bg-gradient-to-r from-gray-900/70 via-black/60 to-gray-900/70 border border-cyan-500/40 rounded-lg px-3 py-2 flex gap-2 items-start">
-
+      <!-- ROBOT TRACKING -->
+      <div class="robot-premium bg-gradient-to-r from-gray-900/70 via-black/60 to-gray-900/70 border border-cyan-500/40 rounded-lg px-3 py-2 flex gap-2 items-start">
         <i class="fa-solid fa-robot text-cyan-300 text-xl mt-0.5 robot-icon-animate"></i>
 
         <div class="flex-1">
@@ -194,14 +135,11 @@
               Robot Tracking Active
               <span class="tracking-dot"></span>
             </h3>
-
-            <span
-              class="text-[9px] px-2 py-[3px] rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-200 font-semibold">
+            <span class="text-[9px] px-2 py-[3px] rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-200 font-semibold">
               LIVE
             </span>
           </div>
 
-          <!-- SCANNING LINE -->
           <div class="mt-1 flex items-center gap-2 text-[10px]">
             <i class="fa-solid fa-satellite-dish text-cyan-300 scan-live"></i>
             <span class="scan-text">Scanning</span><span class="scan-dots text-cyan-200 font-bold"></span>
@@ -220,24 +158,22 @@
 
       <p id="taskId" class="text-xs text-gray-400"></p>
 
-      <h2 id="taskName" class="text-xl font-bold text-yellow-400">
-        Loading...
-      </h2>
+      <h2 id="taskName" class="text-xl font-bold text-yellow-400">Loading...</h2>
 
-      <p id="taskDesc" class="text-gray-300 text-sm leading-relaxed">
-        Please wait...
-      </p>
+      <p id="taskDesc" class="text-gray-300 text-sm leading-relaxed">Please wait...</p>
 
       <!-- GO TO TASK BUTTON -->
       <a id="goToTaskBtn" href="#"
         class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold
-        bg-gradient-to-r from-green-400 via-lime-300 to-yellow-300
-        text-black shadow-md shadow-lime-500/40">
+        bg-gradient-to-r from-green-400 via-lime-300 to-yellow-300 text-black shadow-md shadow-lime-500/40">
         <i class="fa-solid fa-arrow-up-right-from-square"></i>
         Go To Task
       </a>
 
-      <!-- SUBMIT SECTION REMOVED -->
+      <!-- IFRAME CONTAINER -->
+      <div id="taskIframeContainer" class="mt-4 hidden">
+        <iframe id="taskIframe" src="" class="w-full h-96 border border-gray-700 rounded-lg"></iframe>
+      </div>
 
     </div>
 
@@ -269,6 +205,8 @@
     const taskDesc = document.getElementById("taskDesc");
     const taskIdText = document.getElementById("taskId");
     const goToTaskBtn = document.getElementById("goToTaskBtn");
+    const iframeContainer = document.getElementById("taskIframeContainer");
+    const taskIframe = document.getElementById("taskIframe");
 
     onAuthStateChanged(auth, async user => {
       if (!user) {
@@ -296,8 +234,13 @@
       taskDesc.innerText = t.description || "No description provided.";
 
       if (t.view) {
-        goToTaskBtn.href = t.view;
-        goToTaskBtn.target = "_blank";
+        // Open inside iframe
+        goToTaskBtn.onclick = e => {
+          e.preventDefault();
+          taskIframe.src = t.view;
+          iframeContainer.classList.remove("hidden");
+          taskIframe.scrollIntoView({ behavior: "smooth" });
+        };
       } else {
         goToTaskBtn.onclick = e => {
           e.preventDefault();
