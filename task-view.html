@@ -117,6 +117,55 @@
       position: relative;
       top: -1px;
     }
+
+    /* SCANNING TEXT ANIMATION */
+    @keyframes scanGlow {
+      0%, 100% {
+        opacity: 0.6;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes typing {
+      0% {
+        width: 0;
+      }
+      100% {
+        width: 100%;
+      }
+    }
+
+    .scan-text {
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 0;
+      animation: typing 2.2s steps(18, end) infinite;
+      color: rgba(34, 211, 238, 0.95);
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .scan-live {
+      animation: scanGlow 1.1s ease-in-out infinite;
+    }
+
+    /* Changing dots after scanning */
+    @keyframes dotWave {
+      0% { content: ""; }
+      25% { content: "."; }
+      50% { content: ".."; }
+      75% { content: "..."; }
+      100% { content: ""; }
+    }
+
+    .scan-dots::after {
+      content: "";
+      animation: dotWave 1.2s infinite;
+      margin-left: 2px;
+    }
   </style>
 </head>
 
@@ -155,7 +204,7 @@
       <!-- PHOTO URL SUBMIT -->
       <div class="border-t border-gray-700 pt-4 space-y-3">
 
-        <!-- ROBOT TRACKING HEADLINE (PREMIUM + ANIMATION) -->
+        <!-- ROBOT TRACKING HEADLINE (PREMIUM + ANIMATION + SCANNING) -->
         <div class="robot-premium bg-gradient-to-r from-gray-900/70 via-black/60 to-gray-900/70 border border-cyan-500/40 rounded-lg p-3 flex gap-3 items-start">
           <i class="fa-solid fa-robot text-cyan-300 text-2xl mt-1 robot-icon-animate"></i>
 
@@ -172,7 +221,13 @@
               </span>
             </div>
 
-            <p class="text-xs text-gray-300 leading-relaxed mt-1">
+            <!-- SCANNING LINE -->
+            <div class="mt-2 flex items-center gap-2 text-[11px]">
+              <i class="fa-solid fa-satellite-dish text-cyan-300 scan-live"></i>
+              <span class="scan-text">Scanning</span><span class="scan-dots text-cyan-200 font-bold"></span>
+            </div>
+
+            <p class="text-xs text-gray-300 leading-relaxed mt-2">
               Robot আপনার কাজ পর্যবেক্ষণ করবে—আপনি সঠিকভাবে Task সম্পন্ন করেছেন কিনা তা যাচাই করে তারপর Approval হবে।
             </p>
 
