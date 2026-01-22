@@ -14,40 +14,22 @@
   <style>
     /* Smooth floating */
     @keyframes floatY {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-4px);
-      }
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
     }
 
     /* Glow pulse */
     @keyframes glowPulse {
-      0%, 100% {
-        box-shadow: 0 0 0 rgba(34, 211, 238, 0.0);
-      }
-      50% {
-        box-shadow: 0 0 20px rgba(34, 211, 238, 0.35);
-      }
+      0%, 100% { box-shadow: 0 0 0 rgba(34, 211, 238, 0.0); }
+      50% { box-shadow: 0 0 20px rgba(34, 211, 238, 0.35); }
     }
 
     /* Shimmer effect */
     @keyframes shimmer {
-      0% {
-        transform: translateX(-120%);
-        opacity: 0;
-      }
-      20% {
-        opacity: 0.7;
-      }
-      50% {
-        opacity: 0.9;
-      }
-      100% {
-        transform: translateX(120%);
-        opacity: 0;
-      }
+      0% { transform: translateX(-120%); opacity: 0; }
+      20% { opacity: 0.7; }
+      50% { opacity: 0.9; }
+      100% { transform: translateX(120%); opacity: 0; }
     }
 
     /* Robot box wrapper */
@@ -95,14 +77,8 @@
 
     /* Tiny blinking dot */
     @keyframes blinkDot {
-      0%, 100% {
-        opacity: 0.25;
-        transform: scale(1);
-      }
-      50% {
-        opacity: 1;
-        transform: scale(1.3);
-      }
+      0%, 100% { opacity: 0.25; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.3); }
     }
 
     .tracking-dot {
@@ -120,21 +96,13 @@
 
     /* SCANNING TEXT ANIMATION */
     @keyframes scanGlow {
-      0%, 100% {
-        opacity: 0.6;
-      }
-      50% {
-        opacity: 1;
-      }
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
     }
 
     @keyframes typing {
-      0% {
-        width: 0;
-      }
-      100% {
-        width: 100%;
-      }
+      0% { width: 0; }
+      100% { width: 100%; }
     }
 
     .scan-text {
@@ -165,6 +133,126 @@
       content: "";
       animation: dotWave 1.2s infinite;
       margin-left: 2px;
+    }
+
+    /* ===== IFRAME MODAL (NEW) ===== */
+    .iframe-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 9999;
+      display: none;
+    }
+
+    .iframe-modal.active {
+      display: flex;
+    }
+
+    .iframe-box {
+      width: 100%;
+      max-width: 1000px;
+      margin: auto;
+      height: 92vh;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      background: #000;
+      position: relative;
+      box-shadow: 0 0 30px rgba(34, 211, 238, 0.15);
+    }
+
+    .iframe-topbar {
+      height: 50px;
+      background: linear-gradient(to right, rgba(17, 24, 39, 0.9), rgba(0, 0, 0, 0.9));
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+    }
+
+    .iframe-title {
+      font-size: 12px;
+      color: rgba(34, 211, 238, 0.95);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .iframe-title i {
+      color: rgba(34, 211, 238, 0.95);
+    }
+
+    .iframe-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-mini {
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 800;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      transition: 0.2s;
+    }
+
+    .btn-mini:hover {
+      transform: translateY(-1px);
+      border-color: rgba(34, 211, 238, 0.35);
+      box-shadow: 0 0 18px rgba(34, 211, 238, 0.15);
+    }
+
+    .btn-close {
+      background: rgba(239, 68, 68, 0.14);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
+    .btn-close:hover {
+      box-shadow: 0 0 18px rgba(239, 68, 68, 0.25);
+    }
+
+    .iframe-wrap {
+      height: calc(92vh - 50px);
+      width: 100%;
+      position: relative;
+      background: #000;
+    }
+
+    .iframe-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #000;
+    }
+
+    /* Loading layer */
+    .iframe-loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.92);
+      z-index: 10;
+    }
+
+    .loader-ring {
+      width: 56px;
+      height: 56px;
+      border-radius: 999px;
+      border: 3px solid rgba(255, 255, 255, 0.15);
+      border-top-color: rgba(34, 211, 238, 0.95);
+      animation: spin 0.75s linear infinite;
+      box-shadow: 0 0 18px rgba(34, 211, 238, 0.22);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -243,6 +331,45 @@
 
   </main>
 
+  <!-- ===== IFRAME MODAL (NEW) ===== -->
+  <section id="iframeModal" class="iframe-modal">
+    <div class="iframe-box">
+
+      <div class="iframe-topbar">
+        <div class="iframe-title">
+          <i class="fa-solid fa-globe"></i>
+          <span>Task Preview (In-App)</span>
+        </div>
+
+        <div class="iframe-actions">
+          <button id="openNewTabBtn" class="btn-mini">
+            <i class="fa-solid fa-up-right-from-square"></i> Open
+          </button>
+          <button id="reloadIframeBtn" class="btn-mini">
+            <i class="fa-solid fa-rotate-right"></i> Reload
+          </button>
+          <button id="closeIframeBtn" class="btn-mini btn-close">
+            <i class="fa-solid fa-xmark"></i> Close
+          </button>
+        </div>
+      </div>
+
+      <div class="iframe-wrap">
+        <div id="iframeLoading" class="iframe-loading">
+          <div class="text-center space-y-3">
+            <div class="loader-ring mx-auto"></div>
+            <p class="text-xs text-gray-300">
+              Loading Task...
+            </p>
+          </div>
+        </div>
+
+        <iframe id="taskIframe" src=""></iframe>
+      </div>
+
+    </div>
+  </section>
+
   <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -270,6 +397,67 @@
     const taskIdText = document.getElementById("taskId");
     const goToTaskBtn = document.getElementById("goToTaskBtn");
 
+    // IFRAME ELEMENTS
+    const iframeModal = document.getElementById("iframeModal");
+    const taskIframe = document.getElementById("taskIframe");
+    const iframeLoading = document.getElementById("iframeLoading");
+    const closeIframeBtn = document.getElementById("closeIframeBtn");
+    const reloadIframeBtn = document.getElementById("reloadIframeBtn");
+    const openNewTabBtn = document.getElementById("openNewTabBtn");
+
+    let currentTaskLink = "";
+
+    function openIframe(link) {
+      if (!link) return;
+
+      currentTaskLink = link;
+
+      iframeModal.classList.add("active");
+      iframeLoading.style.display = "flex";
+      taskIframe.src = link;
+    }
+
+    function closeIframe() {
+      iframeModal.classList.remove("active");
+      taskIframe.src = "";
+      currentTaskLink = "";
+    }
+
+    function reloadIframe() {
+      if (!currentTaskLink) return;
+      iframeLoading.style.display = "flex";
+      taskIframe.src = currentTaskLink;
+    }
+
+    // When iframe loaded -> hide loading
+    taskIframe.addEventListener("load", () => {
+      iframeLoading.style.display = "none";
+    });
+
+    // Close events
+    closeIframeBtn.addEventListener("click", closeIframe);
+
+    // Reload button
+    reloadIframeBtn.addEventListener("click", reloadIframe);
+
+    // Open in new tab button
+    openNewTabBtn.addEventListener("click", () => {
+      if (!currentTaskLink) return;
+      window.open(currentTaskLink, "_blank");
+    });
+
+    // click outside box close
+    iframeModal.addEventListener("click", (e) => {
+      if (e.target === iframeModal) closeIframe();
+    });
+
+    // Escape key close
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && iframeModal.classList.contains("active")) {
+        closeIframe();
+      }
+    });
+
     onAuthStateChanged(auth, async user => {
       if (!user) {
         location.href = "login.html";
@@ -296,8 +484,12 @@
       taskDesc.innerText = t.description || "No description provided.";
 
       if (t.view) {
-        goToTaskBtn.href = t.view;
-        goToTaskBtn.target = "_blank";
+        // OLD: goToTaskBtn.href = t.view; goToTaskBtn.target = "_blank";
+        // NEW: open inside iframe
+        goToTaskBtn.onclick = (e) => {
+          e.preventDefault();
+          openIframe(t.view);
+        };
       } else {
         goToTaskBtn.onclick = e => {
           e.preventDefault();
