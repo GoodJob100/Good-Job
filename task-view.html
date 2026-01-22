@@ -14,22 +14,40 @@
   <style>
     /* Smooth floating */
     @keyframes floatY {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-4px);
+      }
     }
 
     /* Glow pulse */
     @keyframes glowPulse {
-      0%, 100% { box-shadow: 0 0 0 rgba(34, 211, 238, 0.0); }
-      50% { box-shadow: 0 0 20px rgba(34, 211, 238, 0.35); }
+      0%, 100% {
+        box-shadow: 0 0 0 rgba(34, 211, 238, 0.0);
+      }
+      50% {
+        box-shadow: 0 0 20px rgba(34, 211, 238, 0.35);
+      }
     }
 
     /* Shimmer effect */
     @keyframes shimmer {
-      0% { transform: translateX(-120%); opacity: 0; }
-      20% { opacity: 0.7; }
-      50% { opacity: 0.9; }
-      100% { transform: translateX(120%); opacity: 0; }
+      0% {
+        transform: translateX(-120%);
+        opacity: 0;
+      }
+      20% {
+        opacity: 0.7;
+      }
+      50% {
+        opacity: 0.9;
+      }
+      100% {
+        transform: translateX(120%);
+        opacity: 0;
+      }
     }
 
     /* Robot box wrapper */
@@ -77,8 +95,14 @@
 
     /* Tiny blinking dot */
     @keyframes blinkDot {
-      0%, 100% { opacity: 0.25; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.3); }
+      0%, 100% {
+        opacity: 0.25;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.3);
+      }
     }
 
     .tracking-dot {
@@ -96,13 +120,21 @@
 
     /* SCANNING TEXT ANIMATION */
     @keyframes scanGlow {
-      0%, 100% { opacity: 0.6; }
-      50% { opacity: 1; }
+      0%, 100% {
+        opacity: 0.6;
+      }
+      50% {
+        opacity: 1;
+      }
     }
 
     @keyframes typing {
-      0% { width: 0; }
-      100% { width: 100%; }
+      0% {
+        width: 0;
+      }
+      100% {
+        width: 100%;
+      }
     }
 
     .scan-text {
@@ -122,11 +154,21 @@
 
     /* Changing dots after scanning */
     @keyframes dotWave {
-      0% { content: ""; }
-      25% { content: "."; }
-      50% { content: ".."; }
-      75% { content: "..."; }
-      100% { content: ""; }
+      0% {
+        content: "";
+      }
+      25% {
+        content: ".";
+      }
+      50% {
+        content: "..";
+      }
+      75% {
+        content: "...";
+      }
+      100% {
+        content: "";
+      }
     }
 
     .scan-dots::after {
@@ -135,11 +177,11 @@
       margin-left: 2px;
     }
 
-    /* ===== IFRAME MODAL (NEW) ===== */
+    /* ===== IFRAME MODAL ===== */
     .iframe-modal {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.92);
       z-index: 9999;
       display: none;
     }
@@ -178,10 +220,6 @@
       display: flex;
       align-items: center;
       gap: 8px;
-    }
-
-    .iframe-title i {
-      color: rgba(34, 211, 238, 0.95);
     }
 
     .iframe-actions {
@@ -230,15 +268,18 @@
       background: #000;
     }
 
-    /* Loading layer */
     .iframe-loading {
       position: absolute;
       inset: 0;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
-      background: rgba(0, 0, 0, 0.92);
+      background: rgba(0, 0, 0, 0.93);
       z-index: 10;
+    }
+
+    .iframe-loading.active {
+      display: flex;
     }
 
     .loader-ring {
@@ -252,7 +293,9 @@
     }
 
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
   </style>
 </head>
@@ -270,7 +313,7 @@
 
     <div class="bg-gradient-to-br from-gray-900 to-black border border-gray-700 rounded-xl p-4 space-y-4">
 
-      <!-- ROBOT TRACKING (SMALL SIZE UPDATED) -->
+      <!-- ROBOT TRACKING -->
       <div
         class="robot-premium bg-gradient-to-r from-gray-900/70 via-black/60 to-gray-900/70 border border-cyan-500/40 rounded-lg px-3 py-2 flex gap-2 items-start">
 
@@ -289,7 +332,6 @@
             </span>
           </div>
 
-          <!-- SCANNING LINE -->
           <div class="mt-1 flex items-center gap-2 text-[10px]">
             <i class="fa-solid fa-satellite-dish text-cyan-300 scan-live"></i>
             <span class="scan-text">Scanning</span><span class="scan-dots text-cyan-200 font-bold"></span>
@@ -308,13 +350,9 @@
 
       <p id="taskId" class="text-xs text-gray-400"></p>
 
-      <h2 id="taskName" class="text-xl font-bold text-yellow-400">
-        Loading...
-      </h2>
+      <h2 id="taskName" class="text-xl font-bold text-yellow-400">Loading...</h2>
 
-      <p id="taskDesc" class="text-gray-300 text-sm leading-relaxed">
-        Please wait...
-      </p>
+      <p id="taskDesc" class="text-gray-300 text-sm leading-relaxed">Please wait...</p>
 
       <!-- GO TO TASK BUTTON -->
       <a id="goToTaskBtn" href="#"
@@ -325,13 +363,11 @@
         Go To Task
       </a>
 
-      <!-- SUBMIT SECTION REMOVED -->
-
     </div>
 
   </main>
 
-  <!-- ===== IFRAME MODAL (NEW) ===== -->
+  <!-- IFRAME MODAL -->
   <section id="iframeModal" class="iframe-modal">
     <div class="iframe-box">
 
@@ -355,12 +391,10 @@
       </div>
 
       <div class="iframe-wrap">
-        <div id="iframeLoading" class="iframe-loading">
+        <div id="iframeLoading" class="iframe-loading active">
           <div class="text-center space-y-3">
             <div class="loader-ring mx-auto"></div>
-            <p class="text-xs text-gray-300">
-              Loading Task...
-            </p>
+            <p class="text-xs text-gray-300">Loading Task...</p>
           </div>
         </div>
 
@@ -397,7 +431,7 @@
     const taskIdText = document.getElementById("taskId");
     const goToTaskBtn = document.getElementById("goToTaskBtn");
 
-    // IFRAME ELEMENTS
+    // IFRAME
     const iframeModal = document.getElementById("iframeModal");
     const taskIframe = document.getElementById("taskIframe");
     const iframeLoading = document.getElementById("iframeLoading");
@@ -406,52 +440,76 @@
     const openNewTabBtn = document.getElementById("openNewTabBtn");
 
     let currentTaskLink = "";
+    let loadTimeout = null;
 
     function openIframe(link) {
       if (!link) return;
 
       currentTaskLink = link;
-
       iframeModal.classList.add("active");
-      iframeLoading.style.display = "flex";
-      taskIframe.src = link;
+
+      iframeLoading.classList.add("active");
+      taskIframe.src = "about:blank";
+
+      // set src after small delay (fix some mobile browsers)
+      setTimeout(() => {
+        taskIframe.src = link;
+      }, 50);
+
+      // If blocked by iframe policy -> fallback new tab
+      if (loadTimeout) clearTimeout(loadTimeout);
+
+      loadTimeout = setTimeout(() => {
+        // if still loading after 3 seconds, likely blocked
+        iframeLoading.classList.remove("active");
+
+        Swal.fire({
+          icon: "warning",
+          title: "Iframe Blocked!",
+          text: "এই সাইটটি iframe এ open হতে দিচ্ছে না। তাই নতুন ট্যাবে খুলে দেওয়া হলো ✅",
+          confirmButtonText: "Open Now"
+        }).then(() => {
+          window.open(link, "_blank");
+          closeIframe();
+        });
+      }, 3000);
     }
 
     function closeIframe() {
       iframeModal.classList.remove("active");
-      taskIframe.src = "";
+      taskIframe.src = "about:blank";
       currentTaskLink = "";
+      iframeLoading.classList.remove("active");
+      if (loadTimeout) clearTimeout(loadTimeout);
     }
 
     function reloadIframe() {
       if (!currentTaskLink) return;
-      iframeLoading.style.display = "flex";
-      taskIframe.src = currentTaskLink;
+      iframeLoading.classList.add("active");
+      taskIframe.src = "about:blank";
+
+      setTimeout(() => {
+        taskIframe.src = currentTaskLink;
+      }, 50);
     }
 
-    // When iframe loaded -> hide loading
     taskIframe.addEventListener("load", () => {
-      iframeLoading.style.display = "none";
+      iframeLoading.classList.remove("active");
+      if (loadTimeout) clearTimeout(loadTimeout);
     });
 
-    // Close events
     closeIframeBtn.addEventListener("click", closeIframe);
-
-    // Reload button
     reloadIframeBtn.addEventListener("click", reloadIframe);
 
-    // Open in new tab button
     openNewTabBtn.addEventListener("click", () => {
       if (!currentTaskLink) return;
       window.open(currentTaskLink, "_blank");
     });
 
-    // click outside box close
     iframeModal.addEventListener("click", (e) => {
       if (e.target === iframeModal) closeIframe();
     });
 
-    // Escape key close
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && iframeModal.classList.contains("active")) {
         closeIframe();
@@ -484,8 +542,6 @@
       taskDesc.innerText = t.description || "No description provided.";
 
       if (t.view) {
-        // OLD: goToTaskBtn.href = t.view; goToTaskBtn.target = "_blank";
-        // NEW: open inside iframe
         goToTaskBtn.onclick = (e) => {
           e.preventDefault();
           openIframe(t.view);
@@ -500,4 +556,4 @@
   </script>
 
 </body>
-</html>
+            </html>
