@@ -9,6 +9,115 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Premium Animation CSS -->
+  <style>
+    /* Smooth floating */
+    @keyframes floatY {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-4px);
+      }
+    }
+
+    /* Glow pulse */
+    @keyframes glowPulse {
+      0%, 100% {
+        box-shadow: 0 0 0 rgba(34, 211, 238, 0.0);
+      }
+      50% {
+        box-shadow: 0 0 20px rgba(34, 211, 238, 0.35);
+      }
+    }
+
+    /* Shimmer effect */
+    @keyframes shimmer {
+      0% {
+        transform: translateX(-120%);
+        opacity: 0;
+      }
+      20% {
+        opacity: 0.7;
+      }
+      50% {
+        opacity: 0.9;
+      }
+      100% {
+        transform: translateX(120%);
+        opacity: 0;
+      }
+    }
+
+    /* Robot box wrapper */
+    .robot-premium {
+      position: relative;
+      overflow: hidden;
+      animation: floatY 2.6s ease-in-out infinite, glowPulse 2.2s ease-in-out infinite;
+      border-radius: 14px;
+    }
+
+    /* Shimmer line overlay */
+    .robot-premium::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(34, 211, 238, 0.18),
+          rgba(255, 255, 255, 0.10),
+          rgba(34, 211, 238, 0.18),
+          transparent);
+      transform: translateX(-120%);
+      animation: shimmer 2.4s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    /* Robot icon pulse */
+    @keyframes iconPulse {
+      0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 0 rgba(34, 211, 238, 0));
+      }
+      50% {
+        transform: scale(1.08);
+        filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.55));
+      }
+    }
+
+    .robot-icon-animate {
+      animation: iconPulse 1.8s ease-in-out infinite;
+    }
+
+    /* Tiny blinking dot */
+    @keyframes blinkDot {
+      0%, 100% {
+        opacity: 0.25;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.3);
+      }
+    }
+
+    .tracking-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgb(34, 211, 238);
+      display: inline-block;
+      animation: blinkDot 1.2s ease-in-out infinite;
+      box-shadow: 0 0 12px rgba(34, 211, 238, 0.55);
+      margin-left: 6px;
+      position: relative;
+      top: -1px;
+    }
+  </style>
 </head>
 
 <body class="bg-black text-white min-h-screen">
@@ -45,6 +154,34 @@
 
       <!-- PHOTO URL SUBMIT -->
       <div class="border-t border-gray-700 pt-4 space-y-3">
+
+        <!-- ROBOT TRACKING HEADLINE (PREMIUM + ANIMATION) -->
+        <div class="robot-premium bg-gradient-to-r from-gray-900/70 via-black/60 to-gray-900/70 border border-cyan-500/40 rounded-lg p-3 flex gap-3 items-start">
+          <i class="fa-solid fa-robot text-cyan-300 text-2xl mt-1 robot-icon-animate"></i>
+
+          <div class="flex-1">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-sm font-bold text-cyan-300 flex items-center">
+                Robot Tracking Active
+                <span class="tracking-dot"></span>
+              </h3>
+
+              <span
+                class="text-[10px] px-2 py-1 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-200 font-semibold">
+                LIVE
+              </span>
+            </div>
+
+            <p class="text-xs text-gray-300 leading-relaxed mt-1">
+              Robot আপনার কাজ পর্যবেক্ষণ করবে—আপনি সঠিকভাবে Task সম্পন্ন করেছেন কিনা তা যাচাই করে তারপর Approval হবে।
+            </p>
+
+            <div class="mt-2 flex items-center gap-2 text-[11px] text-gray-400">
+              <i class="fa-solid fa-shield-halved text-cyan-300"></i>
+              <span>Accurate Check • Fast Review • Secure Submission</span>
+            </div>
+          </div>
+        </div>
 
         <label class="block text-sm font-semibold text-gray-300">
           Submit Proof (Photo URL)
