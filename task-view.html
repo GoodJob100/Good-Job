@@ -227,21 +227,90 @@
       background: #000;
     }
 
-    /* Block screen */
-    .blocked-screen {
-      position: absolute;
+    /* ===== IN-APP BROWSER PAGE (NEW) ===== */
+    .webview-page {
+      position: fixed;
       inset: 0;
+      z-index: 10000;
+      background: #000;
+      display: none;
+      flex-direction: column;
+    }
+
+    .webview-page.active {
+      display: flex;
+    }
+
+    .webview-topbar {
+      height: 54px;
+      background: linear-gradient(to right, rgba(17, 24, 39, 0.92), rgba(0, 0, 0, 0.92));
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 12px;
+    }
+
+    .webview-url {
+      flex: 1;
+      font-size: 11px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      color: rgba(255, 255, 255, 0.9);
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .webview-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      color: white;
+      transition: 0.2s;
+    }
+
+    .webview-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(34, 211, 238, 0.35);
+      box-shadow: 0 0 18px rgba(34, 211, 238, 0.15);
+    }
+
+    .webview-frame {
+      width: 100%;
+      flex: 1;
+      border: 0;
+      background: #000;
+    }
+
+    .webview-loading {
+      position: absolute;
+      inset: 54px 0 0 0;
       display: none;
       align-items: center;
       justify-content: center;
-      background: rgba(0, 0, 0, 0.95);
-      z-index: 20;
-      padding: 18px;
-      text-align: center;
+      background: rgba(0, 0, 0, 0.92);
+      z-index: 30;
     }
 
-    .blocked-screen.active {
+    .webview-loading.active {
       display: flex;
+    }
+
+    .mini-loader {
+      width: 52px;
+      height: 52px;
+      border-radius: 999px;
+      border: 3px solid rgba(255, 255, 255, 0.15);
+      border-top-color: rgba(34, 211, 238, 0.95);
+      animation: spin 0.75s linear infinite;
     }
   </style>
 </head>
@@ -311,14 +380,14 @@
 
   </main>
 
-  <!-- IFRAME MODAL -->
+  <!-- IFRAME MODAL (TRY FIRST) -->
   <section id="iframeModal" class="iframe-modal">
     <div class="iframe-box">
 
       <div class="iframe-topbar">
         <div class="iframe-title">
           <i class="fa-solid fa-globe"></i>
-          <span>Task Preview (In-App)</span>
+          <span>Task Preview (Iframe)</span>
         </div>
 
         <div class="iframe-actions">
@@ -330,34 +399,37 @@
 
       <div class="iframe-wrap">
         <iframe id="taskIframe" src="about:blank"></iframe>
-
-        <!-- BLOCKED SCREEN -->
-        <div id="blockedScreen" class="blocked-screen">
-          <div class="max-w-sm w-full bg-gray-900/60 border border-gray-700 rounded-xl p-4">
-            <div class="text-center space-y-3">
-              <i class="fa-solid fa-triangle-exclamation text-yellow-400 text-3xl"></i>
-              <h3 class="font-bold text-lg text-white">Iframe Blocked</h3>
-              <p class="text-xs text-gray-300 leading-relaxed">
-                এই সাইটটি iframe এ open হতে দেয় না। <br>
-                তাই App এর ভিতরেই direct redirect করে দেওয়া হবে ✅
-              </p>
-
-              <button id="continueBtn"
-                class="w-full mt-2 px-4 py-2 rounded-lg font-bold text-sm bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-300 text-black">
-                Continue Now
-              </button>
-
-              <button id="cancelBtn"
-                class="w-full mt-2 px-4 py-2 rounded-lg font-bold text-sm bg-gray-800 text-white border border-gray-700">
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-
       </div>
 
     </div>
+  </section>
+
+  <!-- IN-APP BROWSER PAGE (REAL WEBVIEW STYLE) -->
+  <section id="webviewPage" class="webview-page">
+    <div class="webview-topbar">
+      <button id="webviewBackBtn" class="webview-btn" title="Back">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+
+      <div id="webviewUrl" class="webview-url">Loading...</div>
+
+      <button id="webviewReloadBtn" class="webview-btn" title="Reload">
+        <i class="fa-solid fa-rotate-right"></i>
+      </button>
+
+      <button id="webviewCloseBtn" class="webview-btn" title="Close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div id="webviewLoading" class="webview-loading active">
+      <div class="text-center space-y-3">
+        <div class="mini-loader mx-auto"></div>
+        <p class="text-xs text-gray-300">Opening In-App Browser...</p>
+      </div>
+    </div>
+
+    <iframe id="webviewFrame" class="webview-frame" src="about:blank"></iframe>
   </section>
 
   <!-- Firebase -->
@@ -387,57 +459,97 @@
     const taskIdText = document.getElementById("taskId");
     const goToTaskBtn = document.getElementById("goToTaskBtn");
 
+    // IFRAME TRY
     const iframeModal = document.getElementById("iframeModal");
     const taskIframe = document.getElementById("taskIframe");
     const closeIframeBtn = document.getElementById("closeIframeBtn");
 
-    const blockedScreen = document.getElementById("blockedScreen");
-    const continueBtn = document.getElementById("continueBtn");
-    const cancelBtn = document.getElementById("cancelBtn");
+    // WEBVIEW STYLE PAGE
+    const webviewPage = document.getElementById("webviewPage");
+    const webviewFrame = document.getElementById("webviewFrame");
+    const webviewUrl = document.getElementById("webviewUrl");
+    const webviewLoading = document.getElementById("webviewLoading");
+    const webviewBackBtn = document.getElementById("webviewBackBtn");
+    const webviewReloadBtn = document.getElementById("webviewReloadBtn");
+    const webviewCloseBtn = document.getElementById("webviewCloseBtn");
 
     let currentTaskLink = "";
-    let detectTimer = null;
+    let iframeDetectTimer = null;
 
-    function openIframe(link) {
+    function openIframeTry(link) {
       currentTaskLink = link;
 
       iframeModal.classList.add("active");
-      blockedScreen.classList.remove("active");
       taskIframe.src = "about:blank";
 
       setTimeout(() => {
         taskIframe.src = link;
       }, 80);
 
-      // detect blocked iframe
-      if (detectTimer) clearTimeout(detectTimer);
+      // If iframe blocked -> open webview page automatically
+      if (iframeDetectTimer) clearTimeout(iframeDetectTimer);
 
-      detectTimer = setTimeout(() => {
-        // if blocked, show overlay
-        blockedScreen.classList.add("active");
-      }, 1500);
+      iframeDetectTimer = setTimeout(() => {
+        // Most blocked if still empty / cannot access content
+        // We can't read cross origin content, so timer-based fallback
+        closeIframe();
+        openWebview(link);
+      }, 1400);
     }
 
     function closeIframe() {
       iframeModal.classList.remove("active");
       taskIframe.src = "about:blank";
-      blockedScreen.classList.remove("active");
-      if (detectTimer) clearTimeout(detectTimer);
+      if (iframeDetectTimer) clearTimeout(iframeDetectTimer);
     }
 
     closeIframeBtn.addEventListener("click", closeIframe);
 
-    cancelBtn.addEventListener("click", closeIframe);
+    function openWebview(link) {
+      currentTaskLink = link;
+      webviewPage.classList.add("active");
+      webviewLoading.classList.add("active");
 
-    continueBtn.addEventListener("click", () => {
-      if (!currentTaskLink) return;
-      // SAME PAGE redirect (NOT new tab)
-      window.location.href = currentTaskLink;
+      webviewUrl.innerText = link;
+      webviewFrame.src = "about:blank";
+
+      setTimeout(() => {
+        webviewFrame.src = link;
+      }, 50);
+    }
+
+    function closeWebview() {
+      webviewPage.classList.remove("active");
+      webviewFrame.src = "about:blank";
+      webviewLoading.classList.remove("active");
+    }
+
+    webviewFrame.addEventListener("load", () => {
+      webviewLoading.classList.remove("active");
     });
 
-    // click outside close
-    iframeModal.addEventListener("click", (e) => {
-      if (e.target === iframeModal) closeIframe();
+    webviewCloseBtn.addEventListener("click", closeWebview);
+
+    webviewBackBtn.addEventListener("click", () => {
+      // Back to app (close webview)
+      closeWebview();
+    });
+
+    webviewReloadBtn.addEventListener("click", () => {
+      if (!currentTaskLink) return;
+      webviewLoading.classList.add("active");
+      webviewFrame.src = "about:blank";
+      setTimeout(() => {
+        webviewFrame.src = currentTaskLink;
+      }, 50);
+    });
+
+    // Escape Close
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        if (webviewPage.classList.contains("active")) closeWebview();
+        if (iframeModal.classList.contains("active")) closeIframe();
+      }
     });
 
     onAuthStateChanged(auth, async user => {
@@ -451,7 +563,6 @@
         return;
       }
 
-      const { getDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
       const refTask = doc(db, "tasks", taskId);
       const snap = await getDoc(refTask);
 
@@ -469,7 +580,9 @@
       if (t.view) {
         goToTaskBtn.onclick = (e) => {
           e.preventDefault();
-          openIframe(t.view);
+
+          // First try iframe (if blocked -> webview style auto open)
+          openIframeTry(t.view);
         };
       } else {
         goToTaskBtn.onclick = e => {
@@ -481,4 +594,4 @@
   </script>
 
 </body>
-</html>
+    </html>
